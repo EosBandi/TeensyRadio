@@ -30,7 +30,8 @@ static volatile bool			tx_idle;
 
 bool serial_read_buf( uint8_t * buf, uint8_t count)
 {
-	uint8_t avail, i;
+	uint8_t i;
+	uint16_t avail;
 
 	avail = Serial1.available();
 	if (count > avail) return false;

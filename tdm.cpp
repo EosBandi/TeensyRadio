@@ -529,7 +529,7 @@ tdm_serial_loop(void)
     
     // see if we have received a packet
     if (radio_receive_packet(&len, pbuf)) {
-      debug("Packet received: %u\n",len);
+      //debug("Packet received: %u\r",len);
       // update the activity indication
       received_packet = true;
       fhop_set_locked(true);
@@ -678,8 +678,7 @@ tdm_serial_loop(void)
     // ask the packet system for the next packet to send
       // get a packet from the serial port
     len = packet_get_next(max_xmit, pbuf);
-    if (len>0) debug("Packet:%u\n",len);
-
+    
     if (len > 0) {
        trailer.command = packet_is_injected();
     } else {

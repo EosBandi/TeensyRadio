@@ -163,9 +163,10 @@ packet_get_next(register uint8_t max_xmit, uint8_t *buf)
 {
 	register uint16_t slen;
 
-  
+
 	if (injected_packet) {
 		// send a previously injected packet
+		debug("injected\n");
 		slen = last_sent_len;
 
 		// sending these injected packets at full size doesn't
@@ -192,6 +193,7 @@ packet_get_next(register uint8_t max_xmit, uint8_t *buf)
 	last_sent_is_injected = false;
 
 	slen = Serial1.available();
+
 	if (force_resend) {
 		if (max_xmit < last_sent_len) {
 			return 0;
@@ -224,7 +226,7 @@ packet_get_next(register uint8_t max_xmit, uint8_t *buf)
 		}
     return 0;
 	}
-	return 0;			//no mavlink
+	
 	// try to align packet boundaries with MAVLink packets
 
 	if (mav_pkt_len == 1) {

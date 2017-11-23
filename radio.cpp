@@ -189,10 +189,9 @@ radio_receive_packet(uint8_t *length, uint8_t * buf)
 
   
 	if (!feature_golay)
-  {
-	*length = receive_packet_length;
-	memcpy(buf, radio_buffer, receive_packet_length);
-
+    {
+		*length = receive_packet_length;
+		memcpy(buf, radio_buffer, receive_packet_length);
 		// simple unencoded packets
 		radio_receiver_on();
 		return true;

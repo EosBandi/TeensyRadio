@@ -291,7 +291,6 @@ radio_init(void)
 	param_set(PARAM_MIN_FREQ, freq_min/1000);
 	param_set(PARAM_MAX_FREQ, freq_max/1000);
 	param_set(PARAM_NUM_CHANNELS, num_fh_channels);
-
 	channel_spacing = (freq_max - freq_min) / (num_fh_channels+2);
 
 	// add half of the channel spacing, to ensure that we are well
@@ -302,8 +301,13 @@ radio_init(void)
 	// with different network IDs we will have much lower
 	// interference
 	sdcc_srand(param_get(PARAM_NETID));
+
+    int16_t r;
+	r = sdcc_rand();
+	r = r * 625;
+	
 	if (num_fh_channels > 5) {
-		freq_min += ((unsigned long)(sdcc_rand()*625)) % channel_spacing;
+		freq_min += ( ((unsigned long) r) % channel_spacing);
 	}
 	debug("freq low=%lu high=%lu spacing=%lu\n", 
 	       freq_min, freq_min+(num_fh_channels*channel_spacing), 
@@ -326,6 +330,8 @@ radio_init(void)
 		panic("radio_configure failed");
 	}
 
+
+	debug("freq %lu  spacing=%lu\n", settings.frequency, settings.channel_spacing);
 	// report the real air data rate in parameters
 	param_set(PARAM_AIR_SPEED, radio_air_rate());
 
