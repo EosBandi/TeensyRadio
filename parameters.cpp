@@ -61,7 +61,7 @@ const struct parameter_info {
 	{"OPPRESEND",       1},
 	{"MIN_FREQ",        0},
 	{"MAX_FREQ",        0},
-	{"NUM_CHANNELS",    10},
+	{"NUM_CHANNELS",    13},
 	{"DUTY_CYCLE",    100},
 	{"LBT_RSSI",        0},
 	{"MANCHESTER",      0},
