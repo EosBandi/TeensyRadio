@@ -40,7 +40,6 @@
 #define APP_VERSION_LOW  1
 
 #define DEBUG 1
-#define INCLUDE_GOLAY
 
 
 /// @page hardware Notes on Hardware Allocation

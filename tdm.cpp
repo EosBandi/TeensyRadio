@@ -148,9 +148,6 @@ struct tdm_trailer {
 	uint16_t command:1;
 	uint16_t bonus:1;
 	uint16_t resend:1;
-#ifdef INCLUDE_AES
-	uint16_t crc;
-#endif
 };
 struct tdm_trailer trailer;
 
@@ -159,8 +156,6 @@ struct tdm_trailer trailer;
 //static char remote_at_cmd[AT_CMD_MAXLEN + 1];
 
 #define PACKET_OVERHEAD (sizeof(trailer)+16)
-
-
 
 /// display RSSI output
 ///

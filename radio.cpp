@@ -497,7 +497,6 @@ radio_transmit_simple(uint8_t length, uint8_t * buf, uint16_t timeout_ticks)
 	return false;
 }
 
-#ifdef INCLUDE_GOLAY
 // start transmitting a packet from the transmit FIFO
 //
 // @param length		number of data bytes to send
@@ -547,7 +546,6 @@ radio_transmit_golay(uint8_t length, uint8_t * buf, uint16_t timeout_ticks)
 
 	return radio_transmit_simple(elen, radio_buffer, timeout_ticks);
 }
-#endif // INCLUDE_GOLAY
 
 // start transmitting a packet from the transmit FIFO
 //

@@ -37,8 +37,6 @@
 #include "radio.h"
 #include "golay23.h"
 
-#ifdef INCLUDE_GOLAY
-
 // intermediate arrays for encodeing/decoding. Using these
 // saves some interal memory that would otherwise be needed
 // for pointers
@@ -136,5 +134,3 @@ golay_decode(uint8_t n, uint8_t * in, uint8_t * out)
 	}
 	return errcount;
 }
-
-#endif // INCLUDE_GOLAY
