@@ -1,6 +1,6 @@
 #include "radio.h"
 
-#define RAND_MAX 32767
+#define RAND_MAXIMUM 32767
 
 static uint32_t s = 0x80000001;
 static unsigned long int next = 1;
@@ -23,7 +23,7 @@ int sdcc_rand(void)
     
 
     next = next * 1103515245UL + 12345;
-    return (unsigned int)(next/65536) % (RAND_MAX + 1U);
+    return (unsigned int)(next/65536) % (RAND_MAXIMUM + 1U);
 
 }
 

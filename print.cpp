@@ -5,7 +5,7 @@
 
 
 
-void s1printf(char *format, ...)  {
+void s1printf(const char *format, ...)  {
     int n;
     char buf[128];
     va_list args;
@@ -19,7 +19,7 @@ void s1printf(char *format, ...)  {
 
 
 
-void debug(char *format,...) {
+void debug(const char *format,...) {
 #ifdef DEBUG
   int n;
   char buf[128];
@@ -35,7 +35,7 @@ return;
 #endif
 }
 
-void panic(char *format,...) {
+void panic(const char *format,...) {
     int n;
     char buf[128];
     va_list args;

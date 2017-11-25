@@ -1,6 +1,17 @@
+// Definitions for radio module and teensy hardware
+ 
+
 
 #ifndef _BOARD_H_
 #define _BOARD_H_
+
+
+//Tennsy 3.2 board software reset
+
+#define CPU_RESTART_ADDR (uint32_t *)0xE000ED0C
+#define CPU_RESTART_VAL 0x5FA0004
+#define CPU_RESTART (*CPU_RESTART_ADDR = CPU_RESTART_VAL);
+
 
 enum BoardFrequency {
     FREQ_433	= 0x43,
@@ -35,14 +46,16 @@ enum BoardFrequency {
 
 
 //SPI configuration for Teensy board
+//RFM23xx module connected to the SPI1 port using standard pin configuration
+// SDO - 11, SDI - 12, SCK - 13
+//SDN is not connected, IRQ and SEL are connected as follows
 
 #define rfSEL                   14      // rfm module select active LOW
 #define rfIRQ                   15      // rfm module irq active LOW
 
+//Macros for enabling and disabling the SEL line of RFM23xx module
 #define rfSEL_SELECT             digitalWrite(rfSEL, LOW)
 #define rfSEL_DESELECT           digitalWrite(rfSEL, HIGH);
 
-
-// SDO - 11, SDI - 12, SCK - 13  normal SPI setup
 
 #endif

@@ -638,9 +638,7 @@ tdm_serial_loop(void)
       continue;
     }
     
-    if (!received_packet &&
-          radio_preamble_detected() ||
-          radio_receive_in_progress()) {
+    if ( ( (!received_packet) && radio_preamble_detected() ) || radio_receive_in_progress() ) {
       // a preamble has been detected. Don't
       // transmit for a while
       transmit_wait = packet_latency;
@@ -816,7 +814,7 @@ tdm_init(void)
         
 	// if LBT is enabled, we need at least 3*5ms of window width
 	if (lbt_rssi != 0) {
-		window_width = constrain(window_width, 3*lbt_min_time, window_width);
+		window_width = constrain_(window_width, 3*lbt_min_time, window_width);
 	}
 
 	// the window width cannot be more than 0.4 seconds to meet US

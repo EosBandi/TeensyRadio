@@ -1,2 +1,2 @@
-void s1printf(char *format, ...);
-void debug(char *format, ...);
+void s1printf(const char *format, ...);
+void debug(const char *format, ...);

@@ -6,6 +6,9 @@
 #define DEBUG 1
 
 
+#define SERIAL1_TX_BUFFER_SIZE     1024 // number of outgoing bytes to buffer
+#define SERIAL1_RX_BUFFER_SIZE     1024 // number of incoming bytes to buffer
+
 
 #include <stdarg.h>
 #include <EEPROM.h>
@@ -136,7 +139,6 @@ void loop()
 static void
 hardware_init(void)
 {
-	uint16_t	i;
 
     debug("start hardware init\n");
 
@@ -167,6 +169,7 @@ hardware_init(void)
 	setLed(LED_RADIO,LED_ON);
 	setLed(LED_BOOTLOADER,LED_ON);
 	setLed(LED_DEBUG, LED_ON);
+
 	debug("hardware init successfull\n");
 	delay(200);
 	setLed(LED_RADIO,LED_OFF);

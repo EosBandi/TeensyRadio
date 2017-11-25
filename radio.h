@@ -106,7 +106,7 @@ int sdcc_rand(void);
 /// @param	fmt		printf-style format string and argments
 ///				to be printed.
 ///
-extern void	panic(char *fmt, ...);
+extern void	panic(const char *fmt, ...);
 
 
 // Macro evil for generating strings

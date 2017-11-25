@@ -238,7 +238,7 @@ at_command(void)
 				break;
 			case 'Z':
 				// generate a software reset
-				//RSTSRC |= (1 << 4);
+				CPU_RESTART;
 				for (;;)
 					;
 
