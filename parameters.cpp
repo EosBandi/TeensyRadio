@@ -40,7 +40,6 @@
 ///
 
 #include "radio.h"
-//#include "tdm.h"
 #include "crc.h"
 
 #define DEBUG 1
@@ -86,7 +85,7 @@ param_t	parameter_values[PARAM_MAX];
 typedef char endCheck[(PARAM_FLASH_END < 1023) ? 0 : -1];
 
 static bool
-param_check(enum ParamID id, uint32_t val)
+param_check(uint8_t id, uint32_t val)
 {
 	// parameter value out of range - fail
 	if (id >= PARAM_MAX)
@@ -141,7 +140,7 @@ param_check(enum ParamID id, uint32_t val)
 }
 
 bool
-param_set(enum ParamID param, param_t value)
+param_set(uint8_t param, param_t value)
 {
 	// Sanity-check the parameter value first.
 	if (!param_check(param, value))
@@ -193,7 +192,7 @@ param_set(enum ParamID param, param_t value)
 }
 
 param_t
-param_get(enum ParamID param)
+param_get(uint8_t param)
 {
 	if (param >= PARAM_MAX)
 		return 0;
@@ -204,11 +203,8 @@ bool read_params(uint8_t * input, uint16_t start, uint8_t size)
 {
 	uint16_t		i;
 	
-	debug("Start :%u Size:%u\n",start,size);
-
 	for (i = start; i < start+size; i ++){
 		input[i-start] = flash_read_scratch(i);
-		//debug("%u - %u \n",i,input[i-start]);
 	}
 	// verify checksum
 	if (crc16(size, input) != ((uint16_t) flash_read_scratch(i+1)<<8 | flash_read_scratch(i)))
@@ -238,7 +234,6 @@ param_load(void)
 
 	// Start with default values
 	param_default();
-	debug("Start Param Load...\n");
 	// loop reading the parameters array
 	expected = flash_read_scratch(PARAM_FLASH_START);
 	if (expected > sizeof(parameter_values) || expected < 12*sizeof(param_t))
@@ -250,16 +245,13 @@ param_load(void)
 	
 	// decide whether we read a supported version of the structure
 	if (param_get(PARAM_FORMAT) != PARAM_FORMAT_CURRENT) {
-		debug("parameter format %lu expecting %lu", param_get[PARAM_FORMAT], PARAM_FORMAT_CURRENT);
+		debug("parameter format %lu expecting %lu", param_get(PARAM_FORMAT), PARAM_FORMAT_CURRENT);
 		return false;
 	}
 
-	for (i = 0; i < sizeof(parameter_values); i++) {
-		if (!param_check((ParamID)i, parameter_values[i])) {
+	for (i = 0; i < PARAM_MAX; i++) {
+		if (!param_check(i, parameter_values[i])) {
 			parameter_values[i] = parameter_info[i].default_value;
-
-		
-
 		}
 	}
 	
@@ -295,10 +287,10 @@ param_default(void)
 	for (i = 0; i < PARAM_MAX; i++) {
 		parameter_values[i] = parameter_info[i].default_value;
 	}
-	
+
 }
 
-enum ParamID
+uint8_t
 param_id(char * name)
 {
 	uint8_t i;
@@ -307,11 +299,11 @@ param_id(char * name)
 		if (!strcmp(name, parameter_info[i].name))
 			break;
 	}
-	return (ParamID)i;
+	return i;
 }
 
 const char *
-param_name(enum ParamID param)
+param_name(uint8_t param)
 {
 	if (param < PARAM_MAX) {
 		return parameter_info[param].name;

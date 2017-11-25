@@ -33,6 +33,8 @@
 /// time division multiplexing code
 ///
 
+//todo: check what is going on
+
 #include <stdarg.h>
 #include "radio.h"
 #include "tdm.h"
@@ -51,6 +53,7 @@
 #define TDM_SILENCE1	1
 #define TDM_RECEIVE		2
 #define TDM_SILENCE2	3
+
 //enum tdm_state { TDM_TRANSMIT=0, TDM_SILENCE1=1, TDM_RECEIVE=2, TDM_SILENCE2=3 };
 static char tdm_state;
 
@@ -152,8 +155,8 @@ struct tdm_trailer {
 struct tdm_trailer trailer;
 
 /// buffer to hold a remote AT command before sending
-static bool send_at_command;
-static char remote_at_cmd[AT_CMD_MAXLEN + 1];
+//static bool send_at_command;
+//static char remote_at_cmd[AT_CMD_MAXLEN + 1];
 
 #define PACKET_OVERHEAD (sizeof(trailer)+16)
 
@@ -861,8 +864,8 @@ tdm_init(void)
 void 
 tdm_report_timing(void)
 {
-  s1printf("silence_period: %u\n", (unsigned)silence_period); delay_msec(1);
-  s1printf("tx_window_width: %u\n", (unsigned)tx_window_width); delay_msec(1);
-  s1printf("max_data_packet_length: %u\n", (unsigned)max_data_packet_length); delay_msec(1);
+  s1printf("silence_period: %u\n", (unsigned)silence_period); 
+  s1printf("tx_window_width: %u\n", (unsigned)tx_window_width);
+  s1printf("max_data_packet_length: %u\n", (unsigned)max_data_packet_length);
 }
 

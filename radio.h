@@ -40,7 +40,7 @@
 #define APP_VERSION_LOW  1
 
 #define DEBUG 1
-#define INCLUDE_GOLAY 1
+#define INCLUDE_GOLAY
 
 
 /// @page hardware Notes on Hardware Allocation
@@ -86,7 +86,7 @@ void setLed(char ledPin, char ledValue);
 void put_char(char c);
 void rfInterrupt(void);
 
-static uint8_t	register_read(uint8_t reg);
+//static uint8_t	register_read(uint8_t reg);
 //static unsigned long int next = 1;
 
 /// optional features

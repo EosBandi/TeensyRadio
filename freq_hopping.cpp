@@ -91,9 +91,9 @@ fhop_init(void)
 	shuffleRand();
 	shuffle(channel_map, num_fh_channels);
 
-	for (i=0;i<num_fh_channels;i++) {
-		debug("ChannelMap : %u -> %u\n",i, channel_map[i]);
-	}
+//	for (i=0;i<num_fh_channels;i++) {
+//		debug("ChannelMap : %u -> %u\n",i, channel_map[i]);
+//	}
 
 }
 
@@ -125,7 +125,7 @@ fhop_window_change(void)
 		// when we don't have lock, the receive channel only
 		// changes when the transmit channel wraps
 		receive_channel = (receive_channel + 1) % num_fh_channels;
-		debug("Trying RCV on channel %d\n", (int)receive_channel);
+		debug("FHOP Sync in progress,trying RCV on channel %d\n", (int)receive_channel);
 	}
 }
 
@@ -135,7 +135,7 @@ fhop_set_locked(bool locked)
 {
 #if DEBUG
 	if (locked && !have_radio_lock) {
-		debug("FH lock\n");
+		debug("FH lock established\n");
 	}
 #endif
 	have_radio_lock = locked;

@@ -618,12 +618,10 @@ radio_initialise(void)
 	if (status == 0xFF || status < 5) {
 		return false;
 	}
-	debug("Valid answer from radio.. it present\n");
 	// Reset the radio and setup all the registers
 	software_reset();
 	
 	status = register_read(EZRADIOPRO_DEVICE_VERSION);
-	debug("Status:%u\n",status);
 
 	if ((status & EZRADIOPRO_IPOR) == 0) {
 		// it hasn't powered up cleanly, reset it

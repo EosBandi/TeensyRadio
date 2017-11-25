@@ -46,7 +46,12 @@ void hundredhztimer(void)
 {
 
 	// call the AT parser tick
-	//at_timer();
+	if (Serial.available())
+	{
+		char c = Serial.read();
+		at_input(c);
+		at_command();
+	}
 
 	// update the delay counter
 	if (delay_counter > 0)

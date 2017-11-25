@@ -35,7 +35,6 @@
 #ifndef _GOLAY23_H_
 #define _GOLAY23_H_
 
-#define INCLUDE_GOLAY
 
 #ifdef INCLUDE_GOLAY
 

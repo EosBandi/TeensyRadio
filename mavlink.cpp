@@ -130,7 +130,7 @@ void MAVLink_report(void)
         m->remnoise = remote_statistics.average_noise;
 	mavlink_crc(MAVLINK_RADIO_STATUS_CRC_EXTRA);
 
-	if (Serial1.availableForWrite() < sizeof(struct mavlink_RADIO_v10)+8) {
+	if (Serial1.availableForWrite() < (int)sizeof(struct mavlink_RADIO_v10)+8) {			//cast to int to satisfy cpp compliler
 		// don't cause an overflow
 		return;
 	}

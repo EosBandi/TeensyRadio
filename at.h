@@ -35,22 +35,9 @@
 #ifndef _AT_H_
 #define _AT_H_
 
-extern bool	at_mode_active;	///< if true, the AT interpreter is in command mode
 extern bool	at_cmd_ready;	///< if true, at_cmd / at_cmd_len contain valid data
 
-/// Timer tick handler for the AT command interpreter
-///
-extern void	at_timer(void);
 
-/// +++ detector.  Handles the state machine for detecting the AT escape
-/// sequence.
-///
-/// Call this at interrupt time for every incoming character when at_mode_active
-/// is false.
-///
-/// @param	c		Received character.
-///
-extern void	at_plus_detector(register uint8_t c);
 
 /// AT command character input method.
 ///

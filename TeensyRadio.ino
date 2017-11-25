@@ -47,7 +47,7 @@ IntervalTimer ivtTdmtimer;
 
 void put_char(char c) {
 
-Serial1.write(c);
+Serial.write(c);
 
 
 }
@@ -61,7 +61,10 @@ void setup()
  //Start up USB serial connection for debug	
  delay(3000);
  Serial.begin(115200);
-  debug("Starting..");
+debug("Starting...\n");
+
+  
+
  
 
 
@@ -84,21 +87,23 @@ void loop()
 
 	// Load parameters from flash or defaults
 	// this is done before hardware_init() to get the serial speed
-	/*
+	
 	if (!param_load()) {
 		param_default();
 		debug("Default Parameters loaded...\n");
 		param_save();
 		debug("And Saved...\n");
 	}
-	*/
-	param_default();
-	param_save();
+	
+	//param_default();
+	//param_save();
 
 	// setup boolean features
 	feature_mavlink_framing = param_get(PARAM_MAVLINK);
 	feature_golay = param_get(PARAM_ECC)?true:false;
 	feature_rtscts = param_get(PARAM_RTSCTS)?true:false;
+
+   
 
 	// Do hardware initialisation.
 	hardware_init();
@@ -110,24 +115,14 @@ void loop()
 	attachInterrupt(rfIRQ, rfInterrupt, FALLING);
 
 
-	debug("Radio init success\r");
-	//delay_set(2000);
-	//debug("Start 2sec delay....");
-	//while (!delay_expired());
-	//debug("done\r");
-
-
-	//if (radio_initialise()) {
-	//		/debug("Success\n");
-	//}
-
+	debug("Radio init successfull\n");
+	
 
 	// turn on the receiver
 	if (!radio_receiver_on()) {
 		panic("failed to enable receiver");
 	}
 
-	// Init user pins
 	
 	
 	tdm_serial_loop();
@@ -140,7 +135,12 @@ static void
 hardware_init(void)
 {
 
-    debug("start hardware init\n");
+//TODO: add rts/cts pins, and option to enable/disable them
+//hardware init based on param value ?
+
+
+
+    debug("start hardware init...\n");
 
 	//Led initialisation
 	pinMode(LED_RADIO, OUTPUT);   //Set led for blinking
@@ -175,8 +175,6 @@ hardware_init(void)
 	setLed(LED_RADIO,LED_OFF);
 	setLed(LED_BOOTLOADER,LED_OFF);
 	setLed(LED_DEBUG, LED_OFF);
-	//at_testmode = AT_TEST_RSSI + AT_TEST_TDM;
-
 
 }
 
@@ -196,7 +194,7 @@ radio_init(void)
 
 	// Do generic PHY initialisation
 	if (!radio_initialise()) {
-		panic("radio_initialise failed");
+		panic("radio_initialise failed\n");
 	}
 
 	switch (g_board_frequency) {
@@ -352,7 +350,5 @@ radio_init(void)
 
 	// initialise TDM system
 	tdm_init();
-debug("Radio init successfull\n");
-
 
 }
