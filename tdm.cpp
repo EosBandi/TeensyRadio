@@ -113,7 +113,7 @@ uint8_t duty_cycle;
 static float average_duty_cycle;
 
 /// duty cycle offset due to temperature
-uint8_t duty_cycle_offset;
+uint8_t duty_cycle_offset = 0;
 
 /// set to true if we need to wait for our duty cycle average to drop
 static bool duty_cycle_wait;
@@ -341,6 +341,8 @@ tdm_change_phase(void)
 
 /// called to check temperature
 ///
+/// Temperatur based duty cycle offset is not implemented YET! But the code is keeped here for later use 
+/*
 static void temperature_update(void)
 {
   register int16_t diff;
@@ -368,7 +370,7 @@ static void temperature_update(void)
     duty_cycle_offset = duty_cycle - 20;
   }
 }
-
+*/
 
 /// blink the radio LED if we have not received any packets
 ///
@@ -376,7 +378,8 @@ static void
 link_update(void)
 {
 
-  static uint8_t unlock_count = 10, temperature_count;
+  static uint8_t unlock_count = 10;
+  //static uint8_t temperature_count;
 
   if (received_packet) {
     unlock_count = 0;
@@ -434,69 +437,21 @@ link_update(void)
   
   test_display = at_testmode;
   send_statistics = 1;
-  
+  /*
   temperature_count++;
   if (temperature_count == 4) {
     // check every 2 seconds
     temperature_update();
     temperature_count = 0;
   }
+  */
 }
 
-
-/*
-// dispatch an AT command to the remote system
-void
-tdm_remote_at(void)
-{
-  memcpy(remote_at_cmd, at_cmd, strlen(at_cmd)+1);
-  send_at_command = true;
-}
-
-// handle an incoming at command from the remote radio
-// 
-// Return true if returning a pbuf that needs to be sent to output
-//        false if data is going out to the other modem
-static bool 
-handle_at_command(uint8_t len)
-{
-  if (len < 2 || len > AT_CMD_MAXLEN ||
-      pbuf[0] != (uint8_t)'R' ||
-      pbuf[1] != (uint8_t)'T') {
-    return true;
-  }
-  
-  // setup the command in the at_cmd buffer
-  memcpy(at_cmd, pbuf, len);
-  at_cmd[len] = 0;
-  at_cmd[0] = 'A'; // replace 'R'
-  at_cmd_len = len;
-  at_cmd_ready = true;
-  
-  // run the AT command, capturing any output to the packet
-  // buffer
-  // this reply buffer will be sent at the next opportunity
-  printf_start_capture(pbuf, sizeof(pbuf));
-  at_command();
-  len = printf_end_capture();
-  if (len > 0) {
-    packet_inject(pbuf, len);
-  }
- return false;
-}
-*/
 /// main loop for time division multiplexing transparent serial
 ///
 void
 tdm_serial_loop(void)
 {
-#ifdef RADIO_SPLAT_TESTING_MODE
-    for (;;) {
-        radio_set_channel(0);
-        radio_transmit(MAX_PACKET_LENGTH, pbuf, 0);
-        //radio_receiver_on();
-    }
-#else
   uint8_t	len;
   uint16_t tnow, tdelta;
   uint8_t max_xmit;
@@ -506,8 +461,7 @@ tdm_serial_loop(void)
 
   
   for (;;) {
-    
-    
+        
     // display test data if needed
     if (test_display) {
       display_test_output();
@@ -527,7 +481,6 @@ tdm_serial_loop(void)
     
     // see if we have received a packet
     if (radio_receive_packet(&len, pbuf)) {
-      //debug("Packet received: %u\r",len);
       // update the activity indication
       received_packet = true;
       fhop_set_locked(true);
@@ -760,7 +713,6 @@ tdm_serial_loop(void)
     radio_receiver_on();
     
   }
-#endif // RADIO_SPLAT_TESTING_MODE
 }
 
 
@@ -776,8 +728,9 @@ tdm_init(void)
 #define REGULATORY_MAX_WINDOW (((1000000UL/16)*4)/10)
 #define LBT_MIN_TIME_USEC 5000
 
-	// tdm_build_timing_table();
-
+  //Make sure that there is no duty cycle offset
+  duty_cycle_offset = 0;
+  
 	// calculate how many 16usec ticks it takes to send each byte
 	ticks_per_byte = (8+(8000000UL/(air_rate*1000UL)))/16;      //from 16
         ticks_per_byte++;
@@ -846,12 +799,6 @@ tdm_init(void)
 	}
 	packet_set_max_xmit(i);
 
-                
-	// crc_test();
-
-	// tdm_test_timing();
-	
-	// golay_test();
 }
 
 /// report tdm timings

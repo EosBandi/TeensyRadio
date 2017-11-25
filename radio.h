@@ -42,12 +42,6 @@
 #define DEBUG 1
 
 
-/// @page hardware Notes on Hardware Allocation
-///
-/// @section timers Timer Allocation
-/// @li Timer0 is used by rtPhy for its timeouts.
-/// @li Timer1 is used by the UART driver.
-/// @li Timer3 is used to generate the 10ms timer tick.
 #include <Arduino.h>
 #include <ctype.h>
 #include <stdint.h>
@@ -84,9 +78,6 @@
 void setLed(char ledPin, char ledValue);
 void put_char(char c);
 void rfInterrupt(void);
-
-//static uint8_t	register_read(uint8_t reg);
-//static unsigned long int next = 1;
 
 /// optional features
 extern bool feature_golay;

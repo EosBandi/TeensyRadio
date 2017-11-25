@@ -58,15 +58,10 @@ Serial.write(c);
 void setup()
 {
  
- //Start up USB serial connection for debug	
- delay(3000);
- Serial.begin(115200);
-debug("Starting...\n");
-
-  
-
- 
-
+	//Start up USB serial connection for debug	
+ 	delay(3000);
+ 	Serial.begin(115200);
+	debug("Starting...\n");
 
 
 }
@@ -76,9 +71,7 @@ debug("Starting...\n");
 void loop()
 {
 
-	// Stash board info from the bootloader before we let anything touch
-	// the SFRs.
-	//
+	//Set up board config, this will change later 
 	g_board_frequency = FREQ_433;
 	g_board_bl_version = BOARD_BL_VERSION_REG;
 
@@ -95,9 +88,6 @@ void loop()
 		debug("And Saved...\n");
 	}
 	
-	//param_default();
-	//param_save();
-
 	// setup boolean features
 	feature_mavlink_framing = param_get(PARAM_MAVLINK);
 	feature_golay = param_get(PARAM_ECC)?true:false;
