@@ -92,6 +92,13 @@ serial_init(register uint8_t speed)
 	tx_idle = true;
 
 	serial_device_set_speed(speed);		// device-specific clocking setup
+	if (param_get(PARAM_RTSCTS))
+	{
+		Serial1.attachCts(CTS_PIN);
+		Serial2.attachRts(RTS_PIN);
+	}
+
+
 }
 
 

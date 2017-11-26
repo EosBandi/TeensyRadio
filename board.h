@@ -58,4 +58,9 @@ enum BoardFrequency {
 #define rfSEL_DESELECT           digitalWrite(rfSEL, HIGH);
 
 
+//CTS and RTS pins for serial 1
+#define CTS_PIN         20                      //It could be only 18 or 20 - will become input
+#define RTS_PIN         2                       //It can be any digital pin - will become output
+
+
 #endif
