@@ -1,13 +1,9 @@
-/*
- * File:   spi4teensy3.h
- * Author: xxxajk
- *
- * Created on November 21, 2013, 10:54 AM
+/**
+ * @file spi4teensy3.h 
+ * 
+ * Prototype for spi4teensy3.cpp functions
+ * 
  */
-
-
-// TO-DO: KINETISKL
-
 #ifndef SPI4TEENSY3_H
 #define	SPI4TEENSY3_H
 #if defined(__arm__) && defined(TEENSYDUINO)

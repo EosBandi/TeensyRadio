@@ -1,42 +1,10 @@
-// -*- Mode: C; c-basic-offset: 8; -*-
-//
-// Copyright (c) 2011 Michael Smith, All Rights Reserved
-// Copyright (c) 2011 Andrew Tridgell, All Rights Reserved
-//
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions
-// are met:
-//
-//  o Redistributions of source code must retain the above copyright
-//    notice, this list of conditions and the following disclaimer.
-//  o Redistributions in binary form must reproduce the above copyright
-//    notice, this list of conditions and the following disclaimer in
-//    the documentation and/or other materials provided with the distribution.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-// FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-// COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-// INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
-// OF THE POSSIBILITY OF SUCH DAMAGE.
-//
+/**
+ * @file timer.h 
+ * 
+ * Prototypes for timer and delay functions
+ * 
+ */
 
-/// return the 16 bit timer2 counter
-///
-/// @return		timer counter, in 0.5usec units
-///
-//extern uint16_t timer2_16(void);
-
-/// return microseconds since boot
-///
-/// @return		microseconds since boot
-//extern uint32_t micros(void); //defined in arduino
 
 /// return a 16 bit value that rolls over in approximately
 /// one second intervals
@@ -84,6 +52,11 @@ extern void	delay_msec( uint16_t msec);
 ///
 extern uint8_t timer_entropy(void);
 
-
+/**
+ * @brief 100hz timer ISR function
+ */
 extern void hundredhztimer(void);
+/**
+ * @brief 16ms timer ISR function
+ */
 extern void timer2irq(void);

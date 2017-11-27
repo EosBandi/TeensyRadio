@@ -1,4 +1,9 @@
-// Definitions for radio module and teensy hardware
+/**
+ * @file board.h 
+ * 
+ * Definitions for radio module and teensy hardware 
+ * 
+ */
  
 
 

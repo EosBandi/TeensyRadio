@@ -1,3 +1,11 @@
+/**
+ * @file TeensyRadio.ino 
+ * 
+ * FHOP/TDM data radio with Teensy3 and Si4432 radio modem
+ * implementation based on the SiK radio code by Andrew Tridge
+ * 
+ */
+
 // In serial1.c (avr core) TX and RX buffer size changed to 1024 !
 // In serial1.c and HardwareSerial.h peekx function is defined take care of them
 

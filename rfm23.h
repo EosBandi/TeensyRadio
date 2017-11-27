@@ -1,23 +1,10 @@
-//-----------------------------------------------------------------------------
-// Si1000_defs.h
-//-----------------------------------------------------------------------------
-// Copyright 2010 Silicon Laboratories, Inc.
-// http://www.silabs.com
-//
-// Program Description:
-//
-// Register/bit definitions for the Si100x family.
-//
-//
-// Target:         Si100x
-// Tool chain:     Keil, SDCC
-// Command Line:   None
-//
-//
-// Release 1.0 
-//    -EZRadioPRO definitions created by Ken Berrenger.
-//    -26 JAN 2010  (FB)
-//
+/**
+ * @file egister/bit definitions for the Si4432 chip.
+ * 
+ *  -EZRadioPRO definitions created by Ken Berrenger.
+ */
+
+
 
 //-----------------------------------------------------------------------------
 // Header File Preprocessor Directive

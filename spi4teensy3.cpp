@@ -1,12 +1,3 @@
-/*
- * File:   spi4teensy3.cpp
- * Author: xxxajk
- *
- * Created on November 21, 2013, 10:54 AM
- */
-
-// TO-DO: KINETISKL
-
 #if defined(__arm__) && defined(TEENSYDUINO)
 #include "spi4teensy3.h"
 #if defined(KINETISK)

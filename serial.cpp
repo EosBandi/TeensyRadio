@@ -1,3 +1,12 @@
+/**
+ * @file serial.cpp
+ * 
+ * Wrappers and helper functions to access and set serial hardware in the Teensy
+ * 
+ * TODO: make it abstract and remove hardcoded Serialx references (if possible)
+ * 
+ */
+
 
 #include "radio.h"
 

@@ -1,4 +1,9 @@
-
+/**
+ * @file print.cpp
+ * 
+ * Containt print functions, all of them are printing to Serial0 which is the USB connected serial port
+ * 
+ */
 #include <Arduino.h>
 #include "radio.h"
 
