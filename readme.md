@@ -18,5 +18,6 @@ line. To compile a version which can work together with SiK radios, comment out 
 
 
 # FIXME:
+* SBUS serial data, how to make sure that the input buffer only contains one full SBUS packet ? (set the RX buffer for that serial port to 11byte ?)
 
 
