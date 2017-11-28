@@ -485,9 +485,9 @@ tdm_serial_loop(void)
         // received header
         sync_tx_windows(len);
         last_t = tnow;
-
+  
 #ifdef RACRADIO
-        if (trailer.injected == 1 && len != 0 && !packet_is_duplicate(len, pbuf, trailer.resend) (       //we have to use packet_is_duplicate since it is possible and this populate the last_received buffer
+        if (trailer.injected == 1 && len != 0 && !packet_is_duplicate(len, pbuf, trailer.resend))       //we have to use packet_is_duplicate since it is possible and this populate the last_received buffer
         {
           //We have an incjected packet, which is an likely an sbus injected.
           //copy it to the sbus buffer and signal sbus processor that we have a new data waiting
@@ -536,6 +536,11 @@ tdm_serial_loop(void)
       last_link_update = tnow;
     }
     
+    //FIXME: Inject SBUS packet based on timer (or tnow setting) here 
+    //******
+    //******
+    
+
 
     if (lbt_rssi != 0) {
       // implement listen before talk
