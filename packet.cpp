@@ -130,28 +130,28 @@ uint8_t encryptReturn(uint8_t *buf_out, uint8_t *buf_in, uint8_t buf_in_len)
 }
 
 // return the next packet to be sent
+
+
 uint8_t
 packet_get_next(register uint8_t max_xmit, uint8_t *buf)
 {
 	register uint16_t slen;
 
-
+//***************************************************************************
 	if (injected_packet) {
 		// send a previously injected packet
 		debug("injected\n");
 		slen = last_sent_len;
 
-		// sending these injected packets at full size doesn't
-		// seem to work well ... though I don't really know why!
+		//Maximum send size for an injected packet is 32 bye, if the packet is longer than this, then we have to send it fragments
 		if (max_xmit > 32) {
    		    max_xmit = 32;
 		}
 
 		if (max_xmit < slen) {
 			// send as much as we can
- 		        last_sent_len = slen - max_xmit;
-   		        slen = encryptReturn(buf, last_sent, max_xmit);
-
+ 	        last_sent_len = slen - max_xmit;
+   	        slen = encryptReturn(buf, last_sent, max_xmit);
 			memcpy(last_sent, &last_sent[max_xmit], last_sent_len);
 			last_sent_is_injected = true;
 			return slen;
@@ -161,11 +161,14 @@ packet_get_next(register uint8_t max_xmit, uint8_t *buf)
 		last_sent_is_injected = true;
 		return encryptReturn(buf, last_sent, last_sent_len);
 	}
-
+//****************************************************************************
+	// Ok, there is no injected packet
 	last_sent_is_injected = false;
 
+	//Now check that is there any serial data available
 	slen = Serial1.available();
 
+	//if force resend is set, then we have to resend the last packet which is still in the last_snet and length is last_sent_len
 	if (force_resend) {
 		if (max_xmit < last_sent_len) {
 			return 0;
@@ -192,9 +195,9 @@ packet_get_next(register uint8_t max_xmit, uint8_t *buf)
 
 	if (!feature_mavlink_framing) {
 		// simple framing
-		if (slen > 0 && serial_read_buf(buf, slen)) {
+		if (slen > 0 && serial_read_buf(buf, slen)) {		//Itt belemasolom a buf-ba (ez megy vissza mint csomag payload)
 			last_sent_len = slen;
-      return encryptReturn(last_sent, buf, slen);
+            return encryptReturn(last_sent, buf, slen);			//Es itt bemasolom a last_sent-be is, hogy meglegyen ha esetleg meg kell...
 		}
     return 0;
 	}
@@ -238,7 +241,7 @@ packet_get_next(register uint8_t max_xmit, uint8_t *buf)
 		return mavlink_frame(max_xmit, buf);
 	}
 
-		// We are now looking for a new packet (mav_pkt_len == 0)
+	// We are now looking for a new packet (mav_pkt_len == 0)
 	while (slen > 0) {
 		 uint8_t c = Serial1.peekx(0);
 		if (c == MAVLINK10_STX || c == MAVLINK20_STX) {
@@ -254,6 +257,7 @@ packet_get_next(register uint8_t max_xmit, uint8_t *buf)
 				}
 				break;
 			}
+			//More than one byte is in the buffer, so get mavlink length byte (the one after STX)
 			mav_pkt_len = Serial1.peekx(1);
 			if (mav_pkt_len >= 255-(8+4+13) ||
 			    mav_pkt_len+(8+4+13) > mav_max_xmit) {
@@ -353,7 +357,7 @@ packet_is_duplicate(uint8_t len, uint8_t *buf, bool is_resend)
 	// We are now looking at a packet with the resend bit set
 	if (last_recv_is_resend == false && 
 			len == last_recv_len &&
-			memcmp(last_received, buf, len) == 0) {
+			memcmp(last_received, buf, len) == 0) {						//It is the same as we have in the last_received buffer
 		last_recv_is_resend = false;  // FIXME - this has no effect
 		return true;
 	}
@@ -371,9 +375,15 @@ packet_is_duplicate(uint8_t len, uint8_t *buf, bool is_resend)
 void 
 packet_inject(uint8_t *buf, uint8_t len)
 {
+	
+	//The length of the injected packet shoudl not be larger than the size of the last_sent buffer (252 byte)
+	//However it is advisable that it is less than 32 byte in size, since packet engine will split injected packet for 32 byte sening units.
 	if (len > sizeof(last_sent)) {
 		len = sizeof(last_sent);
 	}
+
+
+
 	memcpy(last_sent, buf, len);
 	last_sent_len = len;
 	last_sent_is_resend = false;

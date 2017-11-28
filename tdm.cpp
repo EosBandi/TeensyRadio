@@ -115,15 +115,14 @@ extern bool seen_mavlink;
 
 struct tdm_trailer {
 	uint16_t window:13;
-	uint16_t command:1;
+	uint16_t injected:1;
 	uint16_t bonus:1;
-	uint16_t resend:1;
+  uint16_t resend:1;
+#ifdef RACRADIO
+  uint8_t  stream_id;          //Identify the stream that we are receiving, based on the stream id we can send it to a separated output
+#endif 
 };
 struct tdm_trailer trailer;
-
-/// buffer to hold a remote AT command before sending
-//static bool send_at_command;
-//static char remote_at_cmd[AT_CMD_MAXLEN + 1];
 
 #define PACKET_OVERHEAD (sizeof(trailer)+16)
 
@@ -487,14 +486,34 @@ tdm_serial_loop(void)
         sync_tx_windows(len);
         last_t = tnow;
 
-        if (len != 0 && trailer.command == 0 && !packet_is_duplicate(len, pbuf, trailer.resend) )
+#ifdef RACRADIO
+        if (trailer.injected == 1 && len != 0 && !packet_is_duplicate(len, pbuf, trailer.resend) (       //we have to use packet_is_duplicate since it is possible and this populate the last_received buffer
         {
-             // its user data - send it out
+          //We have an incjected packet, which is an likely an sbus injected.
+          //copy it to the sbus buffer and signal sbus processor that we have a new data waiting
+          // TODO: SBUS protocol receiving
+          // ***** do it here
+          // ***** we also can add some statistics for RClink injection
+          continue;   //add back control to the main for loop.
+        }
+#endif
+         // Ok we have a payload  and it belongs to the data stream (not injected)
+        if (len != 0 && trailer.injected == 0 && !packet_is_duplicate(len, pbuf, trailer.resend) )
+        {
+#ifdef RACRADIO
+            //TODO: Check trailer.stream and reroute the incoming payload to the appropiate output stream
+
+              setLed(LED_DEBUG, LED_ON);
+              Serial1.write(pbuf, len);
+              setLed(LED_DEBUG,LED_OFF);
+#else
+             // its user data - send it out (No stream handling)
              // the serial port
              setLed(LED_DEBUG, LED_ON);
              Serial1.write(pbuf, len);
              setLed(LED_DEBUG,LED_OFF);
-          
+#endif          
+
         }
       }
       continue;
@@ -595,13 +614,13 @@ tdm_serial_loop(void)
     }
         
     // ask the packet system for the next packet to send
-      // get a packet from the serial port
+    // get a packet from the serial port
     len = packet_get_next(max_xmit, pbuf);
     
     if (len > 0) {
-       trailer.command = packet_is_injected();
+       trailer.injected = packet_is_injected();
     } else {
-       trailer.command = 0;
+       trailer.injected = 0;
     }
     
 
@@ -635,7 +654,7 @@ tdm_serial_loop(void)
     // set right transmit channel
     radio_set_channel(fhop_transmit_channel());
     
-    memcpy(&pbuf[len], &trailer, sizeof(trailer));
+    memcpy(&pbuf[len], &trailer, sizeof(trailer));  //Add trailer to the packet buffer
     
     if (len != 0 && trailer.window != 0) {
       // show the user that we're sending real data
@@ -643,7 +662,7 @@ tdm_serial_loop(void)
     }
     
     if (len == 0) {
-      // sending a zero byte packet gives up
+      // sending a zero byte payload packet gives up
       // our window, but doesn't change the
       // start of the next window
       transmit_yield = 1;
@@ -660,8 +679,13 @@ tdm_serial_loop(void)
       transmitted_ticks += flight_time_estimate(len+sizeof(trailer));
     }
     // start transmitting the packet
+    //
+
+    //If radio_transmit returns false (Timeot, buffer over on under run)
+    //Az adathossz nem volt 0, a trailer.windows nem 0 es trailer injected=0 (nem injected) akkor kuldjuk ujra.
+    //FIXME: Do we really does not resend injected packets ????
     if (!radio_transmit(len + sizeof(trailer), pbuf, tdm_state_remaining + (silence_period/2)) &&
-        len != 0 && trailer.window != 0 && trailer.command == 0) {
+        len != 0 && trailer.window != 0 && trailer.injected == 0) {
         debug("Force resend\n");
       packet_force_resend();
     }
