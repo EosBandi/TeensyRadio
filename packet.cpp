@@ -166,6 +166,14 @@ packet_get_next(register uint8_t max_xmit, uint8_t *buf)
 	last_sent_is_injected = false;
 
 	//Now check that is there any serial data available
+	//TODO: Auxiliary data stream handling comes here.... 
+	/*
+		It sould look like the following 
+		* Check avail bytes
+		* Do a round robin weighted by FIFO bytes
+		* avoid saturation by any channel
+	*/
+
 	slen = Serial1.available();
 
 	//if force resend is set, then we have to resend the last packet which is still in the last_snet and length is last_sent_len
