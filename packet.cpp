@@ -376,13 +376,12 @@ void
 packet_inject(uint8_t *buf, uint8_t len)
 {
 	
-	//The length of the injected packet shoudl not be larger than the size of the last_sent buffer (252 byte)
+	//The length of the injected packet should not be larger than the size of the last_sent buffer (252 byte)
 	//However it is advisable that it is less than 32 byte in size, since packet engine will split injected packet for 32 byte sening units.
+
 	if (len > sizeof(last_sent)) {
 		len = sizeof(last_sent);
 	}
-
-
 
 	memcpy(last_sent, buf, len);
 	last_sent_len = len;
