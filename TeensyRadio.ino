@@ -133,11 +133,6 @@ static void
 hardware_init(void)
 {
 
-//TODO: add rts/cts pins, and option to enable/disable them
-//hardware init based on param value ?
-
-
-
     debug("start hardware init...\n");
 
 	//Led initialisation
