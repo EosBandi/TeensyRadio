@@ -177,6 +177,7 @@ packet_get_next(register uint8_t max_xmit, uint8_t *buf)
 	slen = Serial1.available();
 
 	//if force resend is set, then we have to resend the last packet which is still in the last_snet and length is last_sent_len
+	//We resend only once, this is ensured by the last_sent_is_resend bit.
 	if (force_resend) {
 		if (max_xmit < last_sent_len) {
 			return 0;
@@ -200,6 +201,9 @@ packet_get_next(register uint8_t max_xmit, uint8_t *buf)
 		// nothing available to send
 		return 0;
 	}
+
+	//TODO: Only main channel has a mavlink framing, auxiliary channels are raw, so they goes with simple framing.
+
 
 	if (!feature_mavlink_framing) {
 		// simple framing
