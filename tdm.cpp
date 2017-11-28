@@ -535,11 +535,7 @@ tdm_serial_loop(void)
       link_update();
       last_link_update = tnow;
     }
-    
-    //FIXME: Inject SBUS packet based on timer (or tnow setting) here 
-    //******
-    //******
-    
+
 
 
     if (lbt_rssi != 0) {
@@ -618,6 +614,12 @@ tdm_serial_loop(void)
       max_xmit = max_data_packet_length;
     }
         
+    
+    //FIXME: Inject SBUS packet based on timer (or tnow setting) here 
+    //******
+    //******
+    
+
     // ask the packet system for the next packet to send
     // get a packet from the serial port
     len = packet_get_next(max_xmit, pbuf);
