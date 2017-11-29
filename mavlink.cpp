@@ -85,6 +85,11 @@ struct mavlink_RADIO_v10 {
 /// we always send as MAVLink1 and let the recipient sort it out.
 void MAVLink_report(void)
 {
+
+
+	uint16_t avail = Serial1.availableForWrite();
+	
+
 	struct mavlink_RADIO_v10 *m = (struct mavlink_RADIO_v10 *)&pbuf[6];
 	pbuf[0] = MAVLINK10_STX;
 	pbuf[1] = sizeof(struct mavlink_RADIO_v10);
@@ -95,7 +100,9 @@ void MAVLink_report(void)
 
         m->rxerrors = errors.rx_errors;
         m->fixed    = errors.corrected_packets;
-        m->txbuf    = Serial1.availableForWrite();
+		if (avail >=255) { m->txbuf = 255;}
+		else 			 { m->txbuf = avail;}
+//	    m->txbuf    = Serial1.availableForWrite();
         m->rssi     = statistics.average_rssi;
         m->remrssi  = remote_statistics.average_rssi;
         m->noise    = statistics.average_noise;
@@ -108,4 +115,7 @@ void MAVLink_report(void)
 	}
 
 	Serial1.write(pbuf, sizeof(struct mavlink_RADIO_v10)+8);
+
+	//debug("Mavlink report sent\n");
+
 }
