@@ -88,7 +88,6 @@ void MAVLink_report(void)
 
 
 	uint16_t avail = Serial1.availableForWrite();
-	
 
 	struct mavlink_RADIO_v10 *m = (struct mavlink_RADIO_v10 *)&pbuf[6];
 	pbuf[0] = MAVLINK10_STX;
