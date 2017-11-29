@@ -43,10 +43,14 @@ bool serial_read_buf( uint8_t * buf, uint8_t count)
 	uint16_t avail;
 
 	avail = Serial1.available();
-	if (count > avail) return false;
 
-	for (i=0;i<count;i++)  buf[i] = Serial1.read();
-
+	if (count > avail) {
+		return false;
+	}
+	//debug("avail:%u - read %u\n",avail,count);
+	for (i=0;i<count;i++){
+	 buf[i] = Serial1.read();
+	}
 	return true;
 }
 
@@ -103,8 +107,11 @@ serial_init(register uint8_t speed)
 	serial_device_set_speed(speed);		// device-specific clocking setup
 	if (param_get(PARAM_RTSCTS))
 	{
-		Serial1.attachCts(CTS_PIN);
-		Serial2.attachRts(RTS_PIN);
+
+		//pinMode(CTS_PIN, INPUT);
+		pinMode(RTS_PIN, OUTPUT);
+		//Serial1.attachCts(CTS_PIN);
+		Serial1.attachRts(RTS_PIN);
 	}
 
 

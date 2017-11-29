@@ -11,7 +11,7 @@
 #define _BOARD_H_
 
 
-#define RACRADIO                        //Enable custom R&C exensions (SBUS and auxiliary stream )
+//#define RACRADIO                        //Enable custom R&C exensions (SBUS and auxiliary stream )
 
 //Tennsy 3.2 board software reset
 
