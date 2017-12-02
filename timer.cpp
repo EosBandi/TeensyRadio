@@ -12,14 +12,13 @@
 ///
 static volatile uint8_t delay_counter;
 
-/// high 16 bits of timer2 SYSCLK/12 interrupt
+// A 16 bit value which get's incremented at every 16uS (approx. in 3DR radio it's 15.6uS)
 static volatile uint16_t timer2_high = 0;
 
-//Intervalum timer
 
+//This timer does 100hz, so 100 is one second.
+//Altough we could replace it with millisEllapes, we still nedd a relative slow interrupt to handle command serial port...
 
-
-//This timer does 100hz, so 100 is one second. All I have to do is to set up a timer interrupt and call it the at_timer inside it.
 void hundredhztimer(void)
 {
 
@@ -35,6 +34,7 @@ void hundredhztimer(void)
 	if (delay_counter > 0)
 		delay_counter--;
 }
+
 
 void
 delay_set( uint16_t msec)
@@ -58,59 +58,7 @@ delay_expired(void)
 	return delay_counter == 0;
 }
 
-void
-delay_msec( uint16_t msec)
-{
-	delay_set(msec);
-	while (!delay_expired())
-		;
-}
 
-/*
-// timer2 interrupt called every 32768 microseconds
-INTERRUPT(T2_ISR, INTERRUPT_TIMER2)
-{
-	// re-arm the interrupt by clearing TF2H
-	TMR2CN = 0x04;
-
-	// increment the high 16 bits
-	timer2_high++;
-
-	if (feature_rtscts) {
-		serial_check_rts();
-	}
-}
-
-// return the 16 bit timer2 counter
-// this call costs about 2 microseconds
-uint16_t 
-timer2_16(void)
-{
-	 uint8_t low, high;
-	do {
-		// we need to make sure that the high byte hasn't changed
-		// between reading the high and low parts of the 16 bit timer
-		high = TMR2H;
-		low = TMR2L;
-	} while (high != TMR2H);
-	return low | (((uint16_t)high)<<8);
-}
-
-#if 0
-// return microseconds since boot
-// this call costs about 5usec
-uint32_t 
-micros(void)
-{
-	uint16_t low, high;
-	do {
-		high = timer2_high;
-		low = timer2_16();
-	} while (high != timer2_high);
-	return ((((uint32_t)high)<<16) | low) >> 1;
-}
-#endif
-*/
 // return a 16 bit value that rolls over in approximately
 // one second intervals
 void  timer2irq(void)
@@ -118,27 +66,30 @@ void  timer2irq(void)
 	timer2_high++;
 }
 
-
 uint16_t 
 timer2_tick(void)
 {
-	//uint32_t t;
 
-	//t = micros();
-	//t = t / 15;				//decrease precision to 16uS 
+// Reimplement it with micros()
+// However micros returns unsigned long, so we have to get it devided by 16 (>>4) and chop the upper 16 bits.
+// That gives a 16uS tick counter
+// This supposed to free up an intervaltimer.... but since it cannot be fine tuned we will loose 3DR compatibility 
+// ** The actual timer2 tick in 3DR radio is 15.6 uSec.
 
-	return timer2_high;		//Convert to uint16 to match with the program....
 
+// unsigned long ticks;
+// ticks = micros();
+// ticks = ticks >> 4;
+// ticks = ticks & 65535;
+// return (uint16_t) ticks;
 
+	return timer2_high;	
 }
 
 // initialise timers
 void 
 timer_init(void)
 {
-
-	//Start calling at_timer function in every .01 second (100 calls per second)
-	//ivtAtTimer.begin(hundredhztimer,10000);
 
 }
 

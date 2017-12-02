@@ -150,6 +150,7 @@ hardware_init(void)
 	
 	// initialise timers
 	ivtAtTimer.begin(hundredhztimer,10000);
+	
 	ivtTdmtimer.begin(timer2irq,15.65);
 
 	// UART - set the configured speed
