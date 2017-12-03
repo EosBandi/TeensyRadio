@@ -46,6 +46,7 @@
 #include "rfm23.h"
 #include "golay.h"
 #include "packet.h"
+#include "SBUS.h"
 
 void setLed(char ledPin, char ledValue);
 void put_char(char c);
@@ -55,6 +56,7 @@ void rfInterrupt(void);
 extern bool feature_golay;
 extern uint8_t feature_mavlink_framing;
 extern bool feature_rtscts;
+extern uint8_t feature_sbus;
 
 void sdcc_srand(unsigned int seed);
 int sdcc_rand(void);

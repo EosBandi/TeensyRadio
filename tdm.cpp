@@ -30,6 +30,10 @@ static char tdm_state;
 /// a packet buffer for the TDM code
  uint8_t	pbuf[MAX_PACKET_LENGTH];
 
+/// packet buffer sor sbus insertion
+ uint8_t sbuf[10];
+
+
 /// how many 16usec ticks are remaining in the current state
 static uint16_t tdm_state_remaining;
 
@@ -118,9 +122,7 @@ struct tdm_trailer {
 	uint16_t injected:1;
 	uint16_t bonus:1;
   uint16_t resend:1;
-#ifdef RACRADIO
   uint8_t  stream_id;          //Identify the stream that we are receiving, based on the stream id we can send it to a separated output
-#endif 
 };
 struct tdm_trailer trailer;
 
@@ -422,10 +424,11 @@ void
 tdm_serial_loop(void)
 {
   uint8_t	len;
-  uint16_t tnow, tdelta;
+  uint16_t tnow, tdelta, sdelta;
   uint8_t max_xmit;
   uint16_t last_t = timer2_tick();
   uint16_t last_link_update = last_t;
+  uint16_t last_sbus = last_t;
   
 
   
@@ -486,34 +489,24 @@ tdm_serial_loop(void)
         sync_tx_windows(len);
         last_t = tnow;
   
-#ifdef RACRADIO
         if (trailer.injected == 1 && len != 0 && !packet_is_duplicate(len, pbuf, trailer.resend))       //we have to use packet_is_duplicate since it is possible and this populate the last_received buffer
         {
-          //We have an incjected packet, which is an likely an sbus injected.
-          //copy it to the sbus buffer and signal sbus processor that we have a new data waiting
-          // TODO: SBUS protocol receiving
-          // ***** do it here
-          // ***** we also can add some statistics for RClink injection
+          if (feature_sbus == 2){
+            //We have an incjected packet, which is an likely an sbus injected.
+            //copy it to the sbus buffer and signal sbus processor that we have a new data waiting
+            // TODO: SBUS protocol receiving
+            // ***** do it here
+            // ***** we also can add some statistics for RClink injection
+          }
           continue;   //add back control to the main for loop.
         }
-#endif
          // Ok we have a payload  and it belongs to the data stream (not injected)
         if (len != 0 && trailer.injected == 0 && !packet_is_duplicate(len, pbuf, trailer.resend) )
         {
-#ifdef RACRADIO
             //TODO: Check trailer.stream and reroute the incoming payload to the appropiate output stream
-
               setLed(LED_DEBUG, LED_ON);
               Serial1.write(pbuf, len);
               setLed(LED_DEBUG,LED_OFF);
-#else
-             // its user data - send it out (No stream handling)
-             // the serial port
-             setLed(LED_DEBUG, LED_ON);
-             Serial1.write(pbuf, len);
-             setLed(LED_DEBUG,LED_OFF);
-#endif          
-
         }
       }
       continue;
@@ -528,14 +521,13 @@ tdm_serial_loop(void)
     last_t = tnow;
     uint16_t testt;
     testt = tnow-last_link_update;
-    
+    sdelta = tnow - last_sbus;    
 
        // update link status every 0.5s
     if (testt > 32768) {
       link_update();
       last_link_update = tnow;
     }
-
 
 
     if (lbt_rssi != 0) {
@@ -602,11 +594,14 @@ tdm_serial_loop(void)
       // none ....
       continue;
     }
+
     max_xmit = (tdm_state_remaining - packet_latency) / ticks_per_byte;
+
     if (max_xmit < PACKET_OVERHEAD) {
       // can't fit the trailer in with a byte to spare
       continue;
     }
+
     //max_xmit -= PACKET_OVERHEAD;
     max_xmit -= sizeof(trailer)+1;
         
@@ -614,11 +609,11 @@ tdm_serial_loop(void)
       max_xmit = max_data_packet_length;
     }
         
-    
-    //FIXME: Inject SBUS packet based on timer (or tnow setting) here 
-    //******
-    //******
-    
+  if ( (feature_sbus == 1) && (max_xmit >= 9) && (sdelta > 4200) )  {
+        sbuf[0] = 0xaa; sbuf[1]=0x55;sbuf[2] = 0xaa; sbuf[3]=0x55;sbuf[4] = 0xaa; sbuf[5]=0x55;sbuf[6] = 0xaa; sbuf[7]=0x55;sbuf[8] = 0xaa; sbuf[9]=0x55;
+        packet_inject(sbuf, 9);
+        last_sbus = tnow;
+       }
 
     // ask the packet system for the next packet to send
     // get a packet from the serial port
@@ -665,7 +660,7 @@ tdm_serial_loop(void)
     
     if (len != 0 && trailer.window != 0) {
       // show the user that we're sending real data
-      setLed(LED_DEBUG,LED_ON);
+      setLed(LED_BOOTLOADER,LED_ON);
     }
     
     if (len == 0) {
@@ -704,7 +699,7 @@ tdm_serial_loop(void)
     }
     
     if (len != 0 && trailer.window != 0) {
-      setLed(LED_DEBUG,LED_OFF);
+      setLed(LED_BOOTLOADER,LED_OFF);
     }
 
     // set right receive channel
@@ -733,7 +728,7 @@ tdm_init(void)
   duty_cycle_offset = 0;
   
 	// calculate how many 16usec ticks it takes to send each byte
-	ticks_per_byte = (8+(8000000UL/(air_rate*1000UL)))/16;      //from 16
+	ticks_per_byte = (8+ (8000000UL/ (air_rate*1000UL) ) ) /16;      //from 16
         ticks_per_byte++;
 
 	// calculate the minimum packet latency in 16 usec units
