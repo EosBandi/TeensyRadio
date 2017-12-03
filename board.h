@@ -29,7 +29,7 @@ enum BoardFrequency {
 };
 
 
-#define BOARD_FREQUENCY_REG	    0x43	// board frequency
+#define BOARD_FREQUENCY_REG	    0x43	    // board frequency
 #define BOARD_BL_VERSION_REG	0x01		// bootloader version
 
 #define BOARD_MINTXPOWER 0		// Minimum transmit power level
@@ -48,7 +48,7 @@ enum BoardFrequency {
 #define LED_ON HIGH
 
 
-#define EZRADIOPRO_OSC_CAP_VALUE 0xb4	// Per HRF demo code
+#define EZRADIOPRO_OSC_CAP_VALUE 0x7f	// Per RFM22 demo code...
 #define ENABLE_RFM50_SWITCH	1	// Per HRF demo code, verified presence of RF switch on the RFM50 module
 
 
