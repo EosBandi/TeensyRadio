@@ -610,7 +610,11 @@ tdm_serial_loop(void)
     }
         
   if ( (feature_sbus == 1) && (max_xmit >= 9) && (sdelta > 4200) )  {
-        sbuf[0] = 0xaa; sbuf[1]=0x55;sbuf[2] = 0xaa; sbuf[3]=0x55;sbuf[4] = 0xaa; sbuf[5]=0x55;sbuf[6] = 0xaa; sbuf[7]=0x55;sbuf[8] = 0xaa; sbuf[9]=0x55;
+
+        // TODO: add sbus packet reading from serial port....
+
+        //sbuf[0] = 0xaa; sbuf[1]=0x55;sbuf[2] = 0xaa; sbuf[3]=0x55;sbuf[4] = 0xaa; sbuf[5]=0x55;sbuf[6] = 0xaa; sbuf[7]=0x55;sbuf[8] = 0xaa; sbuf[9]=0x55;
+        
         packet_inject(sbuf, 9);
         last_sbus = tnow;
        }
