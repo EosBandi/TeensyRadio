@@ -440,6 +440,8 @@ tdm_serial_loop(void)
       test_display = 0;
     } 
     
+
+    // If we seen a MAVLink heartbeat then send the MAVLink report package and reset seen_mavlink to wait for another heartbeat
     if (seen_mavlink && feature_mavlink_framing ) {
       seen_mavlink = false;
       MAVLink_report();
@@ -451,7 +453,7 @@ tdm_serial_loop(void)
     // get the time before we check for a packet coming in
     tnow = timer2_tick();
     
-    // see if we have received a packet
+    // see if we have received a packet, radio_receive_packet gives back golay decoded packets, so the length is adjusted accordingly
     if (radio_receive_packet(&len, pbuf)) {
       // update the activity indication
       received_packet = true;
@@ -465,14 +467,14 @@ tdm_serial_loop(void)
       // any more
       transmit_wait = 0;
       
-      if (len < 2) {
         // not a valid packet. We always send
-        // two control bytes at the end of every packet
-        continue;
-      }
+        // three control bytes at the end of every packet (modified from two since we added the stream byte to the trailer)
+      if (len < 3) { continue; }
       
-      // extract control bytes from end of packet
+      // extract control bytes from end of packet, we assume that the last bytes are the trailer
       memcpy(&trailer, &pbuf[len-sizeof(trailer)], sizeof(trailer));
+
+      // Deduct trailer length from the payload length
       len -= sizeof(trailer);
       
       if (trailer.window == 0 && len != 0) {
@@ -480,7 +482,7 @@ tdm_serial_loop(void)
         if (len == sizeof(struct statistics)) {
           memcpy(&remote_statistics, pbuf, len);
         }
-        
+    
         // don't count control packets in the stats
         statistics.receive_count--;
       } else if (trailer.window != 0) {
@@ -512,6 +514,8 @@ tdm_serial_loop(void)
       continue;
     }   //radio_receive_packet
     
+    // At this point we did not received a packet, so time to check that are we allowed to transmit ?
+
     // see how many 16usec ticks have passed and update
     // the tdm state machine. We re-fetch tnow as a bad
     // packet could have cost us a lot of time.
@@ -703,7 +707,7 @@ tdm_serial_loop(void)
     }
     
     if (len != 0 && trailer.window != 0) {
-      setLed(LED_BOOTLOADER,LED_OFF);
+      setLed(LED_DEBUG,LED_OFF);
     }
 
     // set right receive channel
