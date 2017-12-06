@@ -34,10 +34,10 @@
 #define		PARAM_MANCHESTER		13		// enable manchester encoding
 #define		PARAM_RTSCTS			14		// enable hardware flow control
 #define		PARAM_MAX_WINDOW		15		// The maximum window size allowed
-#define		PARAM_MAX				16		// must be last
+#define     PARAM_SBUS_FUNCTION     16      // SBUS function - 0-disabled, 1-SBUS input, 2-SBUS-output
+#define		PARAM_MAX				17		// must be last
 
-//#define PARAM_MAX 16
-#define PARAM_FORMAT_CURRENT	0x1aUL				///< current parameter format ID
+#define PARAM_FORMAT_CURRENT	0x1bUL				///< current parameter format ID
 
 /// Parameter type.
 ///

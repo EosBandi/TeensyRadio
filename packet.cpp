@@ -140,7 +140,6 @@ packet_get_next(register uint8_t max_xmit, uint8_t *buf)
 //***************************************************************************
 	if (injected_packet) {
 		// send a previously injected packet
-		debug("injected\n");
 		slen = last_sent_len;
 
 		//Maximum send size for an injected packet is 32 bye, if the packet is longer than this, then we have to send it fragments

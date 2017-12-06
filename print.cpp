@@ -50,3 +50,7 @@ void panic(const char *format,...) {
     while(1);
   return;
   }
+
+  void put_char(char c) {
+	Serial.write(c);
+}

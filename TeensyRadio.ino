@@ -13,7 +13,7 @@
 //debug for development
 #define DEBUG 1
 
-
+//These does not have any effects, define them in avr/core/serial
 #define SERIAL1_TX_BUFFER_SIZE     1024 // number of outgoing bytes to buffer
 #define SERIAL1_RX_BUFFER_SIZE     1024 // number of incoming bytes to buffer
 
@@ -21,8 +21,6 @@
 #include <stdarg.h>
 #include <EEPROM.h>
 #include "radio.h"
-//#include "tdm.h"
-//#include "timer.h"
 #include "freq_hopping.h"
 
 
@@ -33,12 +31,7 @@ const char g_version_string[] = stringify(APP_VERSION_HIGH) "." stringify(APP_VE
 enum 			BoardFrequency	g_board_frequency;	///< board info from the bootloader
 uint8_t			g_board_bl_version;	///< from the bootloader
 
-/// Configure the Si1000 for operation.
-///
 static void hardware_init(void);
-
-/// Initialise the radio and bring it online.
-///
 static void radio_init(void);
 
 /// statistics for radio and serial errors
@@ -49,27 +42,26 @@ struct statistics statistics, remote_statistics;
 bool feature_golay;
 uint8_t feature_mavlink_framing;
 bool feature_rtscts;
+uint8_t feature_sbus;
+
+
+// channel, fail safe, and lost frames data
+uint16_t sbus_channels[16];
+uint8_t sbus_failSafe;
+uint16_t sbus_lostFrames = 0;
+
 
 IntervalTimer ivtAtTimer;
-IntervalTimer ivtTdmtimer;
-
-void put_char(char c) {
-
-Serial.write(c);
-
-
-}
-
-
+SBUS sbus(Serial2); 
 
 
 void setup()
 {
  
 	//Start up USB serial connection for debug	
- 	delay(3000);
+ 	delay(1000);
  	Serial.begin(115200);
-	debug("Starting...\n");
+	sbus.begin();
 
 
 }
@@ -83,46 +75,29 @@ void loop()
 	g_board_frequency = FREQ_433;
 	g_board_bl_version = BOARD_BL_VERSION_REG;
 
-
-	debug("%s\n", g_banner_string);
-
 	// Load parameters from flash or defaults
 	// this is done before hardware_init() to get the serial speed
 	
 	if (!param_load()) {
 		param_default();
-		debug("Default Parameters loaded...\n");
 		param_save();
-		debug("And Saved...\n");
 	}
 	
 	// setup boolean features
 	feature_mavlink_framing = param_get(PARAM_MAVLINK);
 	feature_golay = param_get(PARAM_ECC)?true:false;
 	feature_rtscts = param_get(PARAM_RTSCTS)?true:false;
-
-   
-
 	// Do hardware initialisation.
 	hardware_init();
-
 	// do radio initialisation
 	radio_init();
-
 	//connect interrupt
 	attachInterrupt(rfIRQ, rfInterrupt, FALLING);
-
-
-	debug("Radio init successfull\n");
-	
-
 	// turn on the receiver
 	if (!radio_receiver_on()) {
 		panic("failed to enable receiver");
 	}
 
-	
-	
 	tdm_serial_loop();
 
   while(1);
@@ -132,8 +107,6 @@ void loop()
 static void
 hardware_init(void)
 {
-
-    debug("start hardware init...\n");
 
 	//Led initialisation
 	pinMode(LED_RADIO, OUTPUT);   //Set led for blinking
@@ -147,24 +120,18 @@ hardware_init(void)
 	spi4teensy3::init(2);				// This supposed to be 6Mhz bus speed, rfm22 is good up to 10Mhz
 	rfSEL_DESELECT;
 	
-	
 	// initialise timers
 	ivtAtTimer.begin(hundredhztimer,10000);
 	
-	ivtTdmtimer.begin(timer2irq,15.65);
+	//ivtTdmtimer.begin(timer2irq,15.65);
 
 	// UART - set the configured speed
 	serial_init(param_get(PARAM_SERIAL_SPEED));
-
-	debug("Serial speed:%u\n", param_get(PARAM_SERIAL_SPEED));
-	
 
 	// Turn off the 'radio running' LED and turn off the bootloader LED
 	setLed(LED_RADIO,LED_ON);
 	setLed(LED_BOOTLOADER,LED_ON);
 	setLed(LED_DEBUG, LED_ON);
-
-	debug("hardware init successfull\n");
 	delay(200);
 	setLed(LED_RADIO,LED_OFF);
 	setLed(LED_BOOTLOADER,LED_OFF);
@@ -176,7 +143,6 @@ hardware_init(void)
 void setLed(char ledPin, char ledValue)
 {
   digitalWrite(ledPin, ledValue);
-
 }
 
 static void
@@ -304,9 +270,9 @@ radio_init(void)
 	if (num_fh_channels > 5) {
 		freq_min += ( ((unsigned long) r) % channel_spacing);
 	}
-	debug("freq low=%lu high=%lu spacing=%lu\n", 
-	       freq_min, freq_min+(num_fh_channels*channel_spacing), 
-	       channel_spacing);
+	//debug("freq low=%lu high=%lu spacing=%lu\n", 
+	//       freq_min, freq_min+(num_fh_channels*channel_spacing), 
+	//       channel_spacing);
 
 	// set the frequency and channel spacing
 	// change base freq based on netid
@@ -326,7 +292,7 @@ radio_init(void)
 	}
 
 
-	debug("freq %lu  spacing=%lu\n", settings.frequency, settings.channel_spacing);
+	//debug("freq %lu  spacing=%lu\n", settings.frequency, settings.channel_spacing);
 	// report the real air data rate in parameters
 	param_set(PARAM_AIR_SPEED, radio_air_rate());
 

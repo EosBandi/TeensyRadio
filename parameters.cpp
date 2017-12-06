@@ -38,6 +38,7 @@ const struct parameter_info {
 	{"MANCHESTER",      0},
 	{"RTSCTS",          0},
 	{"MAX_WINDOW",    131},
+	{"SBUS FUNCTION",	0},
 };
 
 /// In-RAM parameter store.
@@ -104,6 +105,11 @@ param_check(uint8_t id, uint32_t val)
 			return false;
 		break;
 
+	case PARAM_SBUS_FUNCTION:
+		if (val > 2)
+			return false;
+		break;
+
 	default:
 		// no sanity check for this value
 		break;
@@ -152,6 +158,11 @@ param_set(uint8_t param, param_t value)
 	case PARAM_RTSCTS:
 		feature_rtscts = value?true:false;
 		value = feature_rtscts?1:0;
+		break;
+
+	case PARAM_SBUS_FUNCTION:
+		feature_sbus = (uint8_t)value;
+		value = feature_sbus;
 		break;
 
 	default:
