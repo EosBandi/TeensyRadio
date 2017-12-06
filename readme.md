@@ -1,10 +1,6 @@
 # Notes
-With version 1.1 we are diverging from the 3DR compatibility mode, by adding SBUS and auxiliary stream support, to keep the compatiblity
-a board.h has a 
-```
-#define RACRADIO
-```
-line. To compile a version which can work together with SiK radios, comment out this line.
+With version 1.1 we are diverging from the 3DR compatibility by adding SBUS and auxiliary stream support, and changing the tdm timebase to exactly 16uS.
+A 1.0 version with 3Dr radio compatibility was branched. If you want to use it with 3DR radios please use the SiKCompatibile branch
 
 
 

@@ -8,7 +8,7 @@
 #define _RADIO_H_
 
 
-#define APP_VERSION_HIGH 0
+#define APP_VERSION_HIGH 1
 #define APP_VERSION_LOW  1
 
 #define DEBUG 1
