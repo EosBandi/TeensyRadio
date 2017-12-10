@@ -137,7 +137,7 @@ bool SBUS::parse(){
   	// see if serial data is available
   	while(_bus->available() > 0){
       sbusTime = 0;
-    	static uint8_t c;
+      static uint8_t c;
       static uint8_t b;
       c = _bus->read();
 

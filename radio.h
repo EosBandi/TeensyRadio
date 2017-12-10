@@ -57,6 +57,13 @@ extern bool feature_golay;
 extern uint8_t feature_mavlink_framing;
 extern bool feature_rtscts;
 extern uint8_t feature_sbus;
+extern unsigned long sbus_packets_sent;
+
+extern uint16_t sbus_channels[16];
+extern uint8_t sbus_failSafe;
+extern uint16_t sbus_lostFrames;
+extern uint8_t sbus_read(void);
+extern void sbus_write(void);
 
 void sdcc_srand(unsigned int seed);
 int sdcc_rand(void);

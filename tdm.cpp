@@ -15,7 +15,6 @@
 #include "crc.h"
 #include "serial.h"
 
-
 #define USE_TICK_YIELD 1
 
 /// the state of the tdm system
@@ -133,13 +132,29 @@ struct tdm_trailer trailer;
 void
 tdm_show_rssi(void)
 {
-	s1printf("L/R RSSI: %u/%u  L/R noise: %u/%u pkts: %u ",
+  
+  static unsigned long t = millis();
+  static unsigned long last_packets = 0;
+
+
+  unsigned long td;
+  unsigned long sp;
+  
+  td = millis() - t;
+  t = millis();
+
+  sp = sbus_packets_sent - last_packets;
+  last_packets = sbus_packets_sent;
+
+  s1printf("Time:%u SBUS Packets:%u ",td,sp);
+
+	s1printf("L/R RSSI: %u/%u  L/R noise: %u/%u pkts: %u\n",
 	       (unsigned)statistics.average_rssi,
 	       (unsigned)remote_statistics.average_rssi,
 	       (unsigned)statistics.average_noise,
 	       (unsigned)remote_statistics.average_noise,
 	       (unsigned)statistics.receive_count);
-  	s1printf(" txe=%u rxe=%u stx=%u srx=%u ecc=%u/%u temp=%d dco=%u\n",
+/*  	s1printf(" txe=%u rxe=%u stx=%u srx=%u ecc=%u/%u temp=%d dco=%u\n",
 	       (unsigned)errors.tx_errors,
 	       (unsigned)errors.rx_errors,
 	       (unsigned)errors.serial_tx_overflow,
@@ -148,6 +163,7 @@ tdm_show_rssi(void)
 	       (unsigned)errors.corrected_packets,
 	       (int)radio_temperature(),
 	       (unsigned)duty_cycle_offset);
+*/
 	statistics.receive_count = 0;
 }
 
@@ -433,7 +449,8 @@ tdm_serial_loop(void)
 
   
   for (;;) {
-        
+
+
     // display test data if needed
     if (test_display) {
       display_test_output();
@@ -493,12 +510,22 @@ tdm_serial_loop(void)
   
         if (trailer.injected == 1 && len != 0 && !packet_is_duplicate(len, pbuf, trailer.resend))       //we have to use packet_is_duplicate since it is possible and this populate the last_received buffer
         {
+
+
           if (feature_sbus == 2){
-            //We have an incjected packet, which is an likely an sbus injected.
-            //copy it to the sbus buffer and signal sbus processor that we have a new data waiting
-            // TODO: SBUS protocol receiving
-            // ***** do it here
-            // ***** we also can add some statistics for RClink injection
+            setLed(LED_BOOTLOADER,LED_ON);
+           
+            sbus_channels[0] = pbuf[0]<<3;
+            sbus_channels[1] = pbuf[1]<<3;
+            sbus_channels[2] = pbuf[2]<<3;
+            sbus_channels[3] = pbuf[3]<<3;
+            sbus_channels[4] = pbuf[4]<<3;
+            sbus_channels[5] = pbuf[5]<<3;
+            sbus_channels[6] = pbuf[6]<<3;
+            sbus_channels[7] = pbuf[7]<<3;
+            sbus_write();
+            
+            setLed(LED_BOOTLOADER,LED_OFF);
           }
           continue;   //add back control to the main for loop.
         }
@@ -613,14 +640,30 @@ tdm_serial_loop(void)
       max_xmit = max_data_packet_length;
     }
         
-  if ( (feature_sbus == 1) && (max_xmit >= 9) && (sdelta > 4200) )  {
+  if ( (feature_sbus == 1) && (max_xmit >= 9) && (sdelta > 3500) )  {
 
         // TODO: add sbus packet reading from serial port....
-
-        //sbuf[0] = 0xaa; sbuf[1]=0x55;sbuf[2] = 0xaa; sbuf[3]=0x55;sbuf[4] = 0xaa; sbuf[5]=0x55;sbuf[6] = 0xaa; sbuf[7]=0x55;sbuf[8] = 0xaa; sbuf[9]=0x55;
         
-        packet_inject(sbuf, 9);
-        last_sbus = tnow;
+        if (sbus_read()) {
+
+         setLed(LED_BOOTLOADER,LED_ON);
+
+          sbuf[0] = sbus_channels[0]>>3; //change resolution to 8 bit
+          sbuf[1] = sbus_channels[1]>>3;
+          sbuf[2] = sbus_channels[2]>>3;
+          sbuf[3] = sbus_channels[3]>>3;
+          sbuf[4] = sbus_channels[4]>>3;
+          sbuf[5] = sbus_channels[5]>>3;
+          sbuf[6] = sbus_channels[6]>>3;
+          sbuf[7] = sbus_channels[7]>>3;
+          sbuf[8] = sbus_channels[8]>>3;
+          packet_inject(sbuf, 9);
+          last_sbus = tnow;
+          sbus_packets_sent++;
+
+          setLed(LED_BOOTLOADER,LED_OFF);
+
+         }
        }
 
     // ask the packet system for the next packet to send
@@ -668,7 +711,7 @@ tdm_serial_loop(void)
     
     if (len != 0 && trailer.window != 0) {
       // show the user that we're sending real data
-      setLed(LED_BOOTLOADER,LED_ON);
+     // setLed(LED_BOOTLOADER,LED_ON);
     }
     
     if (len == 0) {
@@ -707,7 +750,7 @@ tdm_serial_loop(void)
     }
     
     if (len != 0 && trailer.window != 0) {
-      setLed(LED_DEBUG,LED_OFF);
+      //setLed(LED_BOOTLOADER ,LED_OFF);
     }
 
     // set right receive channel
