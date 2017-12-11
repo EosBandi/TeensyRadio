@@ -18,11 +18,11 @@
 #define SERIAL1_RX_BUFFER_SIZE     1024 // number of incoming bytes to buffer
 
 
+
 #include <stdarg.h>
 #include <EEPROM.h>
 #include "radio.h"
 #include "freq_hopping.h"
-
 
 
 const char g_banner_string[] = "RFD SiK " stringify(APP_VERSION_HIGH) "." stringify(APP_VERSION_LOW) " on " BOARD_NAME;
@@ -56,10 +56,10 @@ uint16_t sbus_lostFrames;
 IntervalTimer ivtAtTimer;
 SBUS sbus(Serial3); 
 
-void sbus_write(void)
+void sbus_write(bool fs)
 {
 
-sbus.write(&sbus_channels[0]);
+sbus.write(&sbus_channels[0], fs);
 
 }
 

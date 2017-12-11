@@ -177,7 +177,7 @@ bool SBUS::parse(){
 }
 
 /* write SBUS packets */
-void SBUS::write(uint16_t* channels){
+void SBUS::write(uint16_t* channels, bool failsafe){
 	uint8_t packet[25];
 
 	/* assemble the SBUS packet */
@@ -211,7 +211,10 @@ void SBUS::write(uint16_t* channels){
 
   	// flags
 	packet[23] = 0x00;
-
+	if (failsafe) {
+		packet[23] = 0xff;
+	}
+	
 	// footer
 	packet[24] = _sbusFooter;
 

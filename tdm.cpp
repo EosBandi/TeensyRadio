@@ -447,6 +447,15 @@ tdm_serial_loop(void)
   uint16_t last_sbus = last_t;
   
 
+  uint16_t last_sbus_received = 0;
+  uint32_t last_sbus_out = 0;
+  uint32_t sbus_last_seen  = 0;
+
+  uint32_t mnow = 0;
+
+  bool sbus_failsafe = 0;
+
+
   
   for (;;) {
 
@@ -457,7 +466,6 @@ tdm_serial_loop(void)
       test_display = 0;
     } 
     
-
     // If we seen a MAVLink heartbeat then send the MAVLink report package and reset seen_mavlink to wait for another heartbeat
     if (seen_mavlink && feature_mavlink_framing ) {
       seen_mavlink = false;
@@ -469,7 +477,29 @@ tdm_serial_loop(void)
     
     // get the time before we check for a packet coming in
     tnow = timer2_tick();
-    
+    mnow = millis();
+
+    //sbus passthrough RX handling
+    if (feature_sbus == SBUS_FUNCTION_RX)
+    {
+     if (mnow-sbus_last_seen >= 120)
+      {
+        sbus_failsafe = 1;
+      } else 
+      {
+        sbus_failsafe  = 0;
+      }
+
+
+      //sbus_failsafe = 1;
+      if ((mnow - last_sbus_out) >= 50 )        // 50ms
+      {
+        sbus_write(sbus_failsafe);
+        last_sbus_out = mnow;
+      }
+    }
+
+
     // see if we have received a packet, radio_receive_packet gives back golay decoded packets, so the length is adjusted accordingly
     if (radio_receive_packet(&len, pbuf)) {
       // update the activity indication
@@ -507,12 +537,12 @@ tdm_serial_loop(void)
         // received header
         sync_tx_windows(len);
         last_t = tnow;
-  
-        if (trailer.injected == 1 && len != 0 && !packet_is_duplicate(len, pbuf, trailer.resend))       //we have to use packet_is_duplicate since it is possible and this populate the last_received buffer
+        
+        //we have to use packet_is_duplicate since it is possible and this populate the last_received buffer
+        if (trailer.injected == 1 && len != 0 && !packet_is_duplicate(len, pbuf, trailer.resend))     
         {
-
-
-          if (feature_sbus == 2){
+          if (feature_sbus == SBUS_FUNCTION_RX)
+          {
             setLed(LED_BOOTLOADER,LED_ON);
            
             sbus_channels[0] = pbuf[0]<<3;
@@ -523,8 +553,8 @@ tdm_serial_loop(void)
             sbus_channels[5] = pbuf[5]<<3;
             sbus_channels[6] = pbuf[6]<<3;
             sbus_channels[7] = pbuf[7]<<3;
-            sbus_write();
-            
+            //sbus_write(sbus_failsafe);
+            sbus_last_seen = mnow;
             setLed(LED_BOOTLOADER,LED_OFF);
           }
           continue;   //add back control to the main for loop.

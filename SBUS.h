@@ -33,7 +33,7 @@ class SBUS{
     	void begin();
     	bool read(uint16_t* channels, uint8_t* failsafe, uint16_t* lostFrames);
     	bool readCal(float* calChannels, uint8_t* failsafe, uint16_t* lostFrames);
-    	void write(uint16_t* channels);
+    	void write(uint16_t* channels, bool failsafe);
   	private:
   		uint8_t _fpos;
         const uint16_t SBUS_TIMEOUT = 10000;
