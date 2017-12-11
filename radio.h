@@ -70,6 +70,8 @@ extern uint8_t sbus_failSafe;
 extern uint16_t sbus_lostFrames;
 extern uint8_t sbus_read(void);
 extern void sbus_write(bool fs);
+void sbus_show_channels(void);
+
 
 void sdcc_srand(unsigned int seed);
 int sdcc_rand(void);

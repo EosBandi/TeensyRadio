@@ -888,3 +888,12 @@ tdm_report_timing(void)
   s1printf("max_data_packet_length: %u\n", (unsigned)max_data_packet_length);
 }
 
+
+void sbus_show_channels(void)
+{
+  //Do a double read to flush 
+  Serial3.clear();
+  while (!sbus_read()) ;
+  s1printf("SBUS ch1:%u ch2:%u ch3:%u ch4:%u ch5:%u ch6:%u ch7:%u ch8:%u\n",sbus_channels[0],sbus_channels[1],sbus_channels[2],sbus_channels[3],sbus_channels[4],sbus_channels[5],sbus_channels[6],sbus_channels[7]);
+
+}

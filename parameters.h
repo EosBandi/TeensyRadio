@@ -35,9 +35,17 @@
 #define		PARAM_RTSCTS			14		// enable hardware flow control
 #define		PARAM_MAX_WINDOW		15		// The maximum window size allowed
 #define     PARAM_SBUS_FUNCTION     16      // SBUS function - 0-disabled, 1-SBUS input, 2-SBUS-output
-#define		PARAM_MAX				17		// must be last
+#define     PARAM_SBUS_FS_CH1       17
+#define     PARAM_SBUS_FS_CH2       18
+#define     PARAM_SBUS_FS_CH3       19
+#define     PARAM_SBUS_FS_CH4       20
+#define     PARAM_SBUS_FS_CH5       21
+#define     PARAM_SBUS_FS_CH6       22
+#define     PARAM_SBUS_FS_CH7       23
+#define     PARAM_SBUS_FS_CH8       24
+#define		PARAM_MAX				25		// must be last
 
-#define PARAM_FORMAT_CURRENT	0x1bUL				///< current parameter format ID
+#define PARAM_FORMAT_CURRENT	0x1cUL				///< current parameter format ID
 
 /// Parameter type.
 ///

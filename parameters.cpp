@@ -39,6 +39,14 @@ const struct parameter_info {
 	{"RTSCTS",          0},
 	{"MAX_WINDOW",    131},
 	{"SBUS FUNCTION",	0},
+	{"SBUS FS CH1"	,	0},
+	{"SBUS FS CH2"	,	0},
+	{"SBUS FS CH3"	,	0},
+	{"SBUS FS CH4"	,	0},
+	{"SBUS FS CH5"	,	0},
+	{"SBUS FS CH6"	,	0},
+	{"SBUS FS CH7"	,	0},
+	{"SBUS FS CH8"	,	0},
 };
 
 /// In-RAM parameter store.
