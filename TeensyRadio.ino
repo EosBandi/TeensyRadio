@@ -18,11 +18,11 @@
 #define SERIAL1_RX_BUFFER_SIZE     1024 // number of incoming bytes to buffer
 
 
+
 #include <stdarg.h>
 #include <EEPROM.h>
 #include "radio.h"
 #include "freq_hopping.h"
-
 
 
 const char g_banner_string[] = "RFD SiK " stringify(APP_VERSION_HIGH) "." stringify(APP_VERSION_LOW) " on " BOARD_NAME;
@@ -43,16 +43,30 @@ bool feature_golay;
 uint8_t feature_mavlink_framing;
 bool feature_rtscts;
 uint8_t feature_sbus;
+unsigned long sbus_packets_sent = 0;
+
 
 
 // channel, fail safe, and lost frames data
 uint16_t sbus_channels[16];
 uint8_t sbus_failSafe;
-uint16_t sbus_lostFrames = 0;
+uint16_t sbus_lostFrames;
 
 
 IntervalTimer ivtAtTimer;
-SBUS sbus(Serial2); 
+SBUS sbus(Serial3); 
+
+void sbus_write(bool fs)
+{
+
+sbus.write(&sbus_channels[0], fs);
+
+}
+
+uint8_t sbus_read(void)
+{
+  return (sbus.read(&sbus_channels[0], &sbus_failSafe, &sbus_lostFrames));
+}
 
 
 void setup()
@@ -87,6 +101,7 @@ void loop()
 	feature_mavlink_framing = param_get(PARAM_MAVLINK);
 	feature_golay = param_get(PARAM_ECC)?true:false;
 	feature_rtscts = param_get(PARAM_RTSCTS)?true:false;
+	feature_sbus = param_get(PARAM_SBUS_FUNCTION);
 	// Do hardware initialisation.
 	hardware_init();
 	// do radio initialisation
@@ -97,6 +112,8 @@ void loop()
 	if (!radio_receiver_on()) {
 		panic("failed to enable receiver");
 	}
+
+   debug("sbus:%u\n",feature_sbus);
 
 	tdm_serial_loop();
 

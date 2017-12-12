@@ -48,6 +48,12 @@
 #include "packet.h"
 #include "SBUS.h"
 
+
+
+#define SBUS_FUNCTION_NONE 0		// No Sbus passthrough
+#define SBUS_FUNCTION_TX 1			// SBUS Transmitter, use Serial3 RX line 
+#define SBUS_FUNCTION_RX 2			// SBUS Receiver, use Serial3 TX line 
+
 void setLed(char ledPin, char ledValue);
 void put_char(char c);
 void rfInterrupt(void);
@@ -57,6 +63,15 @@ extern bool feature_golay;
 extern uint8_t feature_mavlink_framing;
 extern bool feature_rtscts;
 extern uint8_t feature_sbus;
+extern unsigned long sbus_packets_sent;
+
+extern uint16_t sbus_channels[16];
+extern uint8_t sbus_failSafe;
+extern uint16_t sbus_lostFrames;
+extern uint8_t sbus_read(void);
+extern void sbus_write(bool fs);
+void sbus_show_channels(void);
+
 
 void sdcc_srand(unsigned int seed);
 int sdcc_rand(void);

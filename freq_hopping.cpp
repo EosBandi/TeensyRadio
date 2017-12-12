@@ -97,7 +97,7 @@ fhop_window_change(void)
 		// when we don't have lock, the receive channel only
 		// changes when the transmit channel wraps
 		receive_channel = (receive_channel + 1) % num_fh_channels;
-		debug("FHOP Sync in progress,trying RCV on channel %d\n", (int)receive_channel);
+		//debug("FHOP Sync in progress,trying RCV on channel %d\n", (int)receive_channel);
 	}
 }
 

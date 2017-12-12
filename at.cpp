@@ -33,6 +33,7 @@ static void	at_s(void);
 static void	at_ampersand(void);
 static void	at_plus(void);
 static void at_help(void);
+static void at_sbus_fs_set(void);
 
 /**
  * @brief Get input caracter from serial link and process it as a command, sets at_cmd_ready when \r received
@@ -123,6 +124,9 @@ at_command(void)
 			case 'H':
 				at_help();
 				break;
+			case 'R':
+				at_sbus_fs_set();
+				break;
 			case 'Z':
 				// generate a software reset
 				CPU_RESTART;
@@ -138,6 +142,19 @@ at_command(void)
 		at_cmd_len = 0;
 		at_cmd_ready = false;
 	}
+}
+
+static void at_sbus_fs_set(void)
+{
+	uint8_t i;
+	sbus_show_channels();
+	
+	for (i=0;i<8;i++)
+	{
+		param_set(PARAM_SBUS_FS_CH1+i,sbus_channels[i]);
+	}
+
+   s1printf("Set\n");
 }
 
 static void
@@ -214,6 +231,10 @@ at_i(void)
   case '7':
     tdm_show_rssi();
     return;
+  case '8':
+	sbus_show_channels();
+	return;
+
   default:
     at_error();
     return;
@@ -305,7 +326,7 @@ static void at_help(void)
 	s1printf("ATI# Where # is:\n");
 	s1printf("      0 - sw banner  | 1 - sw version | 2 - board id\n");
 	s1printf("      3 - frequency  | 4 - board ver. | 5 - all parameters\n");
-	s1printf("      6 - tdm timing | 7 - show rssi  | \n");
+	s1printf("      6 - tdm timing | 7 - show rssi  | 8 - show sbus channel values\n");
 	s1printf("ATS#?     - Get parameter # value\n");
 	s1printf("ATS#=val  - Set parameter # value to val\n");
 	s1printf("AT&W      - Save parameters to EEPROM\n");
