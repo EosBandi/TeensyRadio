@@ -43,7 +43,8 @@
 #define     PARAM_SBUS_FS_CH6       22
 #define     PARAM_SBUS_FS_CH7       23
 #define     PARAM_SBUS_FS_CH8       24
-#define		PARAM_MAX				25		// must be last
+#define     PARAM_SBUS_FS_TIMEOUT   25
+#define		PARAM_MAX				26		// must be last
 
 #define PARAM_FORMAT_CURRENT	0x1cUL				///< current parameter format ID
 

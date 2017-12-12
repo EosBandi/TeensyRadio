@@ -482,23 +482,27 @@ tdm_serial_loop(void)
     //sbus passthrough RX handling
     if (feature_sbus == SBUS_FUNCTION_RX)
     {
-     if (mnow-sbus_last_seen >= 120)
+      if ( (mnow - sbus_last_seen) >= param_get(PARAM_SBUS_FS_TIMEOUT))
       {
         sbus_failsafe = 1;
-      } else 
-      {
-        sbus_failsafe  = 0;
+        //Set failsafe channel values;
+        uint8_t i;
+        for (i = 0; i < 8; i++)
+        {
+          sbus_channels[i] = param_get(PARAM_SBUS_FS_CH1 + i) << 3;
+        }
       }
-
-
+      else
+      {
+        sbus_failsafe = 0;
+      }
       //sbus_failsafe = 1;
-      if ((mnow - last_sbus_out) >= 50 )        // 50ms
+      if ((mnow - last_sbus_out) >= 50) // 50ms
       {
         sbus_write(sbus_failsafe);
         last_sbus_out = mnow;
       }
     }
-
 
     // see if we have received a packet, radio_receive_packet gives back golay decoded packets, so the length is adjusted accordingly
     if (radio_receive_packet(&len, pbuf)) {

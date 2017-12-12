@@ -38,15 +38,17 @@ const struct parameter_info {
 	{"MANCHESTER",      0},
 	{"RTSCTS",          0},
 	{"MAX_WINDOW",    131},
-	{"SBUS FUNCTION",	0},
-	{"SBUS FS CH1"	,	0},
-	{"SBUS FS CH2"	,	0},
-	{"SBUS FS CH3"	,	0},
-	{"SBUS FS CH4"	,	0},
-	{"SBUS FS CH5"	,	0},
-	{"SBUS FS CH6"	,	0},
-	{"SBUS FS CH7"	,	0},
-	{"SBUS FS CH8"	,	0},
+	{"SBUS_FUNCTION",	0},
+	{"SBUS_FS_CH1",		0},
+	{"SBUS_FS_CH2",		0},
+	{"SBUS_FS_CH3",		0},
+	{"SBUS_FS_CH4",		0},
+	{"SBUS_FS_CH5",		0},
+	{"SBUS_FS_CH6",		0},
+	{"SBUS_FS_CH7",		0},
+	{"SBUS_FS_CH8",		0},
+	{"SBUS_FS_TIMEOUT",	250},
+	
 };
 
 /// In-RAM parameter store.
