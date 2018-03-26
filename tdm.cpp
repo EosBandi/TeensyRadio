@@ -480,8 +480,11 @@ tdm_serial_loop(void)
     mnow = millis();
 
     //sbus passthrough RX handling
+	//Check Failsafe, and write sbus output
     if (feature_sbus == SBUS_FUNCTION_RX)
     {
+
+	  //Check failsafe
       if ( (mnow - sbus_last_seen) >= param_get(PARAM_SBUS_FS_TIMEOUT))
       {
         sbus_failsafe = 1;
@@ -494,15 +497,19 @@ tdm_serial_loop(void)
       }
       else
       {
+        // NO failsafe
         sbus_failsafe = 0;
       }
-      //sbus_failsafe = 1;
+
+	  //output sbus channel values in every 50ms, regardless of receiving status (Failsafe set in the code above)
       if ((mnow - last_sbus_out) >= 50) // 50ms
       {
         sbus_write(sbus_failsafe);
         last_sbus_out = mnow;
       }
-    }
+
+
+    }  //End SBUS RX part 1
 
     // see if we have received a packet, radio_receive_packet gives back golay decoded packets, so the length is adjusted accordingly
     if (radio_receive_packet(&len, pbuf)) {
@@ -545,7 +552,8 @@ tdm_serial_loop(void)
         //we have to use packet_is_duplicate since it is possible and this populate the last_received buffer
         if (trailer.injected == 1 && len != 0 && !packet_is_duplicate(len, pbuf, trailer.resend))     
         {
-          if (feature_sbus == SBUS_FUNCTION_RX)
+		// TODO: Check sbus stream id 
+		if (feature_sbus == SBUS_FUNCTION_RX)
           {
             setLed(LED_BOOTLOADER,LED_ON);
            
@@ -557,13 +565,13 @@ tdm_serial_loop(void)
             sbus_channels[5] = pbuf[5]<<3;
             sbus_channels[6] = pbuf[6]<<3;
             sbus_channels[7] = pbuf[7]<<3;
-            //sbus_write(sbus_failsafe);
             sbus_last_seen = mnow;
             setLed(LED_BOOTLOADER,LED_OFF);
           }
           continue;   //add back control to the main for loop.
         }
-         // Ok we have a payload  and it belongs to the data stream (not injected)
+
+		// Ok we have a payload  and it belongs to the data stream (not injected)
         if (len != 0 && trailer.injected == 0 && !packet_is_duplicate(len, pbuf, trailer.resend) )
         {
             //TODO: Check trailer.stream and reroute the incoming payload to the appropiate output stream
@@ -676,8 +684,6 @@ tdm_serial_loop(void)
         
   if ( (feature_sbus == 1) && (max_xmit >= 9) && (sdelta > 3500) )  {
 
-        // TODO: add sbus packet reading from serial port....
-        
         if (sbus_read()) {
 
          setLed(LED_BOOTLOADER,LED_ON);
