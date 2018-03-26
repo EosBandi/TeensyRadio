@@ -25,7 +25,7 @@
 #include "freq_hopping.h"
 
 
-const char g_banner_string[] = "RFD SiK " stringify(APP_VERSION_HIGH) "." stringify(APP_VERSION_LOW) " on " BOARD_NAME;
+const char g_banner_string[] = "TeensyRADIO " stringify(APP_VERSION_HIGH) "." stringify(APP_VERSION_LOW) " on " BOARD_NAME;
 const char g_version_string[] = stringify(APP_VERSION_HIGH) "." stringify(APP_VERSION_LOW);
 
 enum 			BoardFrequency	g_board_frequency;	///< board info from the bootloader
