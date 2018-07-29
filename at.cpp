@@ -220,7 +220,7 @@ at_i(void)
     s1printf("%u\n", g_board_frequency);
     break;
   case '4':
-    s1printf("%u\n", g_board_bl_version);
+    s1printf("None\n");
     return;
   case '5':
     print_params();

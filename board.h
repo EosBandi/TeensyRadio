@@ -29,8 +29,7 @@ enum BoardFrequency {
 };
 
 
-#define BOARD_FREQUENCY_REG	    0x43	    // board frequency
-#define BOARD_BL_VERSION_REG	0x01		// bootloader version
+#define BOARD_RADIO_FREQ    FREQ_868
 
 #define BOARD_MINTXPOWER 0		// Minimum transmit power level
 #define BOARD_MAXTXPOWER 20		// Maximum transmit power level
@@ -40,12 +39,16 @@ enum BoardFrequency {
 
 
 //Led pin definitions
-#define LED_RADIO       21
-#define LED_BOOTLOADER  22
-#define LED_DEBUG       23
+#define LED_STATUS      20      //Green
+#define LED_RADIO       21      //Yellow
+#define LED_BOOTLOADER  22      //Red
+#define LED_DEBUG       23      //Blue
 
 #define LED_OFF LOW
 #define LED_ON HIGH
+
+#define PUSHBUTTON      17      //Pushbutton to set failsafe
+
 
 
 #define EZRADIOPRO_OSC_CAP_VALUE 0x7f	// Per RFM22 demo code...

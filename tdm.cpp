@@ -682,7 +682,7 @@ tdm_serial_loop(void)
       max_xmit = max_data_packet_length;
     }
         
-  if ( (feature_sbus == 1) && (max_xmit >= 9) && (sdelta > 3500) )  {
+  if ( (feature_sbus == SBUS_FUNCTION_TX) && (max_xmit >= 9) && (sdelta > 3500) )  {
 
         if (sbus_read()) {
 

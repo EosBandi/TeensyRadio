@@ -2,7 +2,6 @@
  * @file rand.cpp
  * 
  * Definitions for radio module and teensy hardware
- * This need to make it compatibile with SiK 1.9 radio modems. (As long as SBUS injection is not used)
  */
 #include "radio.h"
 

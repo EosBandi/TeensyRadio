@@ -29,7 +29,6 @@ const char g_banner_string[] = "TeensyRADIO " stringify(APP_VERSION_HIGH) "." st
 const char g_version_string[] = stringify(APP_VERSION_HIGH) "." stringify(APP_VERSION_LOW);
 
 enum 			BoardFrequency	g_board_frequency;	///< board info from the bootloader
-uint8_t			g_board_bl_version;	///< from the bootloader
 
 static void hardware_init(void);
 static void radio_init(void);
@@ -58,6 +57,7 @@ SBUS sbus(Serial3);
 
 void sbus_write(bool fs)
 {
+if (fs) setLed(LED_STATUS, LED_ON);
 
 sbus.write(&sbus_channels[0], fs);
 
@@ -86,8 +86,7 @@ void loop()
 {
 
 	//Set up board config, this will change later 
-	g_board_frequency = FREQ_433;
-	g_board_bl_version = BOARD_BL_VERSION_REG;
+	g_board_frequency = BOARD_RADIO_FREQ;
 
 	// Load parameters from flash or defaults
 	// this is done before hardware_init() to get the serial speed
@@ -129,7 +128,12 @@ hardware_init(void)
 	pinMode(LED_RADIO, OUTPUT);   //Set led for blinking
 	pinMode(LED_BOOTLOADER, OUTPUT);
 	pinMode(LED_DEBUG, OUTPUT);
+	pinMode(LED_STATUS, OUTPUT);
    
+	//pushbutton init
+	pinMode(PUSHBUTTON, INPUT);
+
+
 	// SPI1
 	pinMode(rfSEL, OUTPUT);
 	pinMode(rfIRQ, INPUT);				
@@ -145,11 +149,14 @@ hardware_init(void)
 	// UART - set the configured speed
 	serial_init(param_get(PARAM_SERIAL_SPEED));
 
-	// Turn off the 'radio running' LED and turn off the bootloader LED
+	
+	//Turn on all led's 
+	setLed(LED_STATUS,LED_ON);
 	setLed(LED_RADIO,LED_ON);
 	setLed(LED_BOOTLOADER,LED_ON);
 	setLed(LED_DEBUG, LED_ON);
 	delay(200);
+	setLed(LED_STATUS, LED_OFF);
 	setLed(LED_RADIO,LED_OFF);
 	setLed(LED_BOOTLOADER,LED_OFF);
 	setLed(LED_DEBUG, LED_OFF);
