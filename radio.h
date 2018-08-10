@@ -241,6 +241,7 @@ extern bool radio_receive_in_progress(void);
 
 /// send a MAVLink status report packet
 void MAVLink_report(void);
+void MAVLink_statustext(const char *fmt, ...);
 
 struct radio_settings {
 	uint32_t frequency;

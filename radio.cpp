@@ -672,8 +672,8 @@ radio_configure(uint8_t air_rate)
 
 	clear_status_registers();
 
-	register_write(EZRADIOPRO_GPIO0_CONFIGURATION, 0x15);	// RX state (output)
-	register_write(EZRADIOPRO_GPIO1_CONFIGURATION, 0x12);	// TX state (output)
+	register_write(EZRADIOPRO_GPIO1_CONFIGURATION, 0x15);	// RX state (output)
+	register_write(EZRADIOPRO_GPIO0_CONFIGURATION, 0x12);	// TX state (output)
 	radio_set_diversity(DIVERSITY_DISABLED);
 
 	// set capacitance
@@ -777,6 +777,8 @@ radio_configure(uint8_t air_rate)
 			register_write(reg_index[i],
 				       reg_table_868[i][rate_selection]);
 		}
+					debug("Freq 868 is selected\n");
+
 	} else {
 		for (i = 0; i < NUM_RADIO_REGISTERS; i++) {
 			register_write(reg_index[i],
@@ -806,7 +808,7 @@ radio_set_transmit_power(uint8_t power)
 		i = NUM_POWER_LEVELS-1;
 	}
 	settings.transmit_power = power_levels[i];
-	register_write(EZRADIOPRO_TX_POWER, i);
+	register_write(EZRADIOPRO_TX_POWER, i+8);
 }
 
 // get the current transmit power (in dBm)

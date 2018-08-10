@@ -154,7 +154,7 @@ tdm_show_rssi(void)
 	       (unsigned)statistics.average_noise,
 	       (unsigned)remote_statistics.average_noise,
 	       (unsigned)statistics.receive_count);
-/*  	s1printf(" txe=%u rxe=%u stx=%u srx=%u ecc=%u/%u temp=%d dco=%u\n",
+  	s1printf(" txe=%u rxe=%u stx=%u srx=%u ecc=%u/%u temp=%d dco=%u\n",
 	       (unsigned)errors.tx_errors,
 	       (unsigned)errors.rx_errors,
 	       (unsigned)errors.serial_tx_overflow,
@@ -163,7 +163,7 @@ tdm_show_rssi(void)
 	       (unsigned)errors.corrected_packets,
 	       (int)radio_temperature(),
 	       (unsigned)duty_cycle_offset);
-*/
+
 	statistics.receive_count = 0;
 }
 
@@ -902,8 +902,11 @@ tdm_report_timing(void)
 void sbus_show_channels(void)
 {
   //Do a double read to flush 
-  Serial3.clear();
-  while (!sbus_read()) ;
-  s1printf("SBUS ch1:%u ch2:%u ch3:%u ch4:%u ch5:%u ch6:%u ch7:%u ch8:%u\n",sbus_channels[0],sbus_channels[1],sbus_channels[2],sbus_channels[3],sbus_channels[4],sbus_channels[5],sbus_channels[6],sbus_channels[7]);
+  if (feature_sbus == SBUS_FUNCTION_TX)
+  {
+    Serial3.clear();
+    while (!sbus_read()) ;
+    s1printf("SBUS ch1:%u ch2:%u ch3:%u ch4:%u ch5:%u ch6:%u ch7:%u ch8:%u\n",sbus_channels[0],sbus_channels[1],sbus_channels[2],sbus_channels[3],sbus_channels[4],sbus_channels[5],sbus_channels[6],sbus_channels[7]);
+  }
 
 }

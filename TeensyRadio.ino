@@ -90,17 +90,23 @@ void loop()
 
 	// Load parameters from flash or defaults
 	// this is done before hardware_init() to get the serial speed
-	
+
 	if (!param_load()) {
 		param_default();
 		param_save();
 	}
 	
+
+
+
 	// setup boolean features
 	feature_mavlink_framing = param_get(PARAM_MAVLINK);
 	feature_golay = param_get(PARAM_ECC)?true:false;
 	feature_rtscts = param_get(PARAM_RTSCTS)?true:false;
 	feature_sbus = param_get(PARAM_SBUS_FUNCTION);
+
+    if (feature_mavlink_framing) debug("Mavlink framing ON\n");
+
 	// Do hardware initialisation.
 	hardware_init();
 	// do radio initialisation
@@ -294,9 +300,9 @@ radio_init(void)
 	if (num_fh_channels > 5) {
 		freq_min += ( ((unsigned long) r) % channel_spacing);
 	}
-	//debug("freq low=%lu high=%lu spacing=%lu\n", 
-	//       freq_min, freq_min+(num_fh_channels*channel_spacing), 
-	//       channel_spacing);
+	debug("freq low=%lu high=%lu spacing=%lu\n", 
+	       freq_min, freq_min+(num_fh_channels*channel_spacing), 
+	       channel_spacing);
 
 	// set the frequency and channel spacing
 	// change base freq based on netid

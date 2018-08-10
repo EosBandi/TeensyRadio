@@ -53,6 +53,9 @@ static void check_heartbeat(uint8_t * buf)
         if ((buf[1] == 9 && buf[0] == MAVLINK10_STX && buf[5] == 0) ||
             (buf[1] <= 9 && buf[0] == MAVLINK20_STX && buf[7] == 0 && buf[8] == 0 && buf[9] == 0)) {
 		// looks like a MAVLink heartbeat
+
+
+
 		seen_mavlink = true;
 	}
 }
@@ -124,6 +127,10 @@ uint8_t mavlink_frame(uint8_t max_xmit, uint8_t * buf)
 
 uint8_t encryptReturn(uint8_t *buf_out, uint8_t *buf_in, uint8_t buf_in_len)
 { 
+
+  //This is the placeholder for encryption, until it implementd
+
+
   // if no encryption or not supported fall back to copy
   memcpy(buf_out, buf_in, buf_in_len);
   return buf_in_len;
